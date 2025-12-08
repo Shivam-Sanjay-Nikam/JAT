@@ -23,7 +23,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     if (!isOpen) return null
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-sm animate-fade-in">
             <div className="glass-panel w-full max-w-md border border-red-500/30 shadow-[0_0_50px_-10px_rgba(239,68,68,0.3)] animate-fade-in-up">
 
                 {/* Header */}
