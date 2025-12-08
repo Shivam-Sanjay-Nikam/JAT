@@ -7,6 +7,7 @@ import { UserPlus, Users as UsersIcon, User, Trash2 } from 'lucide-react'
 import { useFriendRequests } from '../hooks/useFriendRequests'
 import { useFriends } from '../hooks/useFriends'
 import { useAuth } from '../hooks/useAuth'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 
 export const Friends: React.FC = () => {
     const { user } = useAuth()
@@ -45,27 +46,33 @@ export const Friends: React.FC = () => {
         setEmail('')
     }
 
-    const handleRemoveFriend = async (friendId: string, friendUserId: string) => {
-        if (!confirm('Are you sure you want to remove this friend?')) return
+    const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; friendshipId: string; userId: string; friendId: string } | null>(null)
+
+    const handleRemoveFriend = async () => {
+        if (!deleteConfirm) return
+
+        const { friendshipId, userId, friendId } = deleteConfirm
 
         // Delete both directions of friendship
         const { error: error1 } = await supabase
             .from('friends')
             .delete()
-            .eq('user_id', friendId)
-            .eq('friend_id', friendUserId)
+            .eq('user_id', userId)
+            .eq('friend_id', friendId)
 
         const { error: error2 } = await supabase
             .from('friends')
             .delete()
-            .eq('user_id', friendUserId)
-            .eq('friend_id', friendId)
+            .eq('user_id', friendId)
+            .eq('friend_id', userId)
 
         if (error1 || error2) {
             console.error('Error removing friend:', error1 || error2)
         } else {
             refreshFriends()
         }
+
+        setDeleteConfirm(null)
     }
 
     return (
@@ -163,7 +170,12 @@ export const Friends: React.FC = () => {
                                                         </div>
                                                     </div>
                                                     <button
-                                                        onClick={() => handleRemoveFriend(friend.user_id, friend.friend_id)}
+                                                        onClick={() => setDeleteConfirm({
+                                                            show: true,
+                                                            friendshipId: friend.id,
+                                                            userId: friend.user_id,
+                                                            friendId: friend.friend_id
+                                                        })}
                                                         className="text-slate-600 hover:text-red-400 transition-colors p-1"
                                                         title="Disconnect Node"
                                                     >
@@ -202,6 +214,17 @@ export const Friends: React.FC = () => {
                     )}
 
                 </div>
+
+                {/* Confirmation Dialog */}
+                <ConfirmDialog
+                    isOpen={deleteConfirm?.show || false}
+                    title="Disconnect_Node"
+                    message="Are you sure you want to disconnect this network node? This action will remove the connection from both sides."
+                    confirmText="Disconnect"
+                    cancelText="Cancel"
+                    onConfirm={handleRemoveFriend}
+                    onCancel={() => setDeleteConfirm(null)}
+                />
             </main>
         </div>
     )

@@ -51,6 +51,52 @@ export const Help: React.FC = () => {
                             </p>
                         </div>
                     </div>
+
+                    {/* Form Fields Explanation */}
+                    <div className="glass-panel p-6 rounded-xl border-l-4 border-l-blue-500 mt-6">
+                        <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                            <Terminal className="w-4 h-4 text-blue-400" />
+                            INIT_NEW_PROTOCOL Form Fields
+                        </h3>
+                        <div className="space-y-3 text-sm">
+                            <div className="border-l-2 border-slate-700 pl-3">
+                                <p className="text-primary-400 font-bold text-xs mb-1">Target_Company</p>
+                                <p className="text-slate-400 text-xs">The name of the company you're applying to.</p>
+                            </div>
+                            <div className="border-l-2 border-slate-700 pl-3">
+                                <p className="text-primary-400 font-bold text-xs mb-1">Role_Designation</p>
+                                <p className="text-slate-400 text-xs">The job title or position you're applying for.</p>
+                            </div>
+                            <div className="border-l-2 border-slate-700 pl-3">
+                                <p className="text-primary-400 font-bold text-xs mb-1">Status_Check</p>
+                                <p className="text-slate-400 text-xs">Current stage: APPLIED, INTERVIEWING, OFFER, ACCEPTED, REJECTED, or WITHDRAWN.</p>
+                            </div>
+                            <div className="border-l-2 border-slate-700 pl-3">
+                                <p className="text-primary-400 font-bold text-xs mb-1">Secure_Uplink</p>
+                                <p className="text-slate-400 text-xs">URL to the job posting (optional).</p>
+                            </div>
+                            <div className="border-l-2 border-slate-700 pl-3">
+                                <p className="text-primary-400 font-bold text-xs mb-1">User_Identity</p>
+                                <p className="text-slate-400 text-xs">Email address used for this application (optional).</p>
+                            </div>
+                            <div className="border-l-2 border-slate-700 pl-3">
+                                <p className="text-primary-400 font-bold text-xs mb-1">Access_Key_Encrypted</p>
+                                <p className="text-slate-400 text-xs">Password for the application portal. Stored encrypted (optional).</p>
+                            </div>
+                            <div className="border-l-2 border-slate-700 pl-3">
+                                <p className="text-primary-400 font-bold text-xs mb-1">Geo_Coordinates</p>
+                                <p className="text-slate-400 text-xs">Job location (city, state, or "Remote") (optional).</p>
+                            </div>
+                            <div className="border-l-2 border-slate-700 pl-3">
+                                <p className="text-primary-400 font-bold text-xs mb-1">Referral_Source</p>
+                                <p className="text-slate-400 text-xs">Name of person who referred you (optional).</p>
+                            </div>
+                            <div className="border-l-2 border-slate-700 pl-3">
+                                <p className="text-primary-400 font-bold text-xs mb-1">Data_Packet</p>
+                                <p className="text-slate-400 text-xs">Upload your resume PDF for this application (optional).</p>
+                            </div>
+                        </div>
+                    </div>
                 </section>
 
                 <div className="h-px bg-gradient-to-r from-transparent via-slate-800 to-transparent"></div>
