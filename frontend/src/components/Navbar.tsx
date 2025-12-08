@@ -26,7 +26,7 @@ export const Navbar: React.FC = () => {
                         {/* Logo and Title */}
                         <img src="/FODENGE.png" alt="Fodenge Logo" className="w-8 h-8 object-contain" />
                         <span className="text-lg font-bold tracking-widest uppercase bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-emerald-400 font-[Orbitron]">
-                            JobTracker
+                            Job Application Tracker
                         </span>
                     </div>
 

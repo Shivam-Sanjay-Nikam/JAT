@@ -37,7 +37,7 @@ export const Register: React.FC = () => {
                 <div className="flex flex-col items-center mb-8">
                     <Briefcase className="w-12 h-12 text-primary-500 mb-2" />
                     <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-indigo-400">
-                        JobTracker
+                        Job Application Tracker
                     </h1>
                     <p className="text-slate-400">Create your account</p>
                 </div>
