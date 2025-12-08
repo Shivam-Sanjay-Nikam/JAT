@@ -92,6 +92,7 @@ export const JobList: React.FC = () => {
                             job={job}
                             onEdit={(job) => { setEditingJob(job); setIsFormOpen(true); }}
                             onDelete={deleteJob}
+                            onStatusChange={(id, status) => updateJob(id, { application_status: status })}
                         />
                     ))
                 ) : (

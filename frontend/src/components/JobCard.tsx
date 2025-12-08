@@ -10,6 +10,7 @@ interface JobCardProps {
     job: JobApplication
     onEdit: (job: JobApplication) => void
     onDelete: (id: string) => void
+    onStatusChange: (id: string, status: ApplicationStatus) => Promise<void>
 }
 
 const statusColors = {
@@ -20,10 +21,11 @@ const statusColors = {
     [ApplicationStatus.OFFER]: 'bg-green-500/10 text-green-400 border-green-500/20',
 }
 
-export const JobCard: React.FC<JobCardProps> = ({ job, onEdit, onDelete }) => {
+export const JobCard: React.FC<JobCardProps> = ({ job, onEdit, onDelete, onStatusChange }) => {
     const [showPassword, setShowPassword] = useState(false)
     const [passwordPlain, setPasswordPlain] = useState<string | null>(null)
     const [passwordLoading, setPasswordLoading] = useState(false)
+    const [statusLoading, setStatusLoading] = useState(false)
 
     const handleDownloadResume = async () => {
         if (!job.resume_url) return
@@ -57,15 +59,40 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onEdit, onDelete }) => {
         }
     }
 
+    const handleStatusChange = async (status: ApplicationStatus) => {
+        if (status === job.application_status) return
+        setStatusLoading(true)
+        try {
+            await onStatusChange(job.id, status)
+        } catch (err) {
+            console.error('Failed to update status', err)
+        } finally {
+            setStatusLoading(false)
+        }
+    }
+
     return (
-        <div className="glass-panel rounded-xl p-6 transition-all hover:scale-[1.01] hover:shadow-2xl hover:shadow-primary-500/5 group">
+        <div className="glass-panel rounded-xl p-6 transition-all hover:scale-[1.01] hover:shadow-2xl hover:shadow-primary-500/5 group relative overflow-hidden">
+            <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-primary-500/5 via-transparent to-indigo-500/5" />
             <div className="flex justify-between items-start mb-4">
                 <div>
                     <h3 className="text-xl font-bold text-slate-100 mb-1">{job.role}</h3>
                     <p className="text-slate-400 font-medium text-lg">{job.company}</p>
                 </div>
-                <div className={clsx("px-3 py-1 rounded-full text-xs font-semibold border", statusColors[job.application_status])}>
-                    {job.application_status}
+                <div className="flex items-center gap-2">
+                    <div className={clsx("px-3 py-1 rounded-full text-xs font-semibold border", statusColors[job.application_status])}>
+                        {job.application_status}
+                    </div>
+                    <select
+                        className="bg-slate-900/70 border border-slate-700 text-xs text-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        value={job.application_status}
+                        onChange={(e) => handleStatusChange(e.target.value as ApplicationStatus)}
+                        disabled={statusLoading}
+                    >
+                        {Object.values(ApplicationStatus).map(status => (
+                            <option key={status} value={status}>{status}</option>
+                        ))}
+                    </select>
                 </div>
             </div>
 
