@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react'
 import { JobApplication, ApplicationStatus } from '../types'
-import { Calendar, MapPin, Link as LinkIcon, FileText, Lock, Edit2, Trash2, ExternalLink, RefreshCw } from 'lucide-react'
+import { Calendar, MapPin, Link as LinkIcon, FileText, Lock, Edit2, Trash2, ExternalLink, RefreshCw, ChevronDown } from 'lucide-react'
 import { format } from 'date-fns'
 import clsx from 'clsx'
 import { supabase } from '../lib/supabase'
@@ -82,49 +81,55 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onEdit, onDelete, onStatu
     return (
         <div className="glass-panel rounded-sm p-0 overflow-hidden group hover:border-primary-500/50 transition-colors duration-300">
             {/* Header Bar */}
-            <div className="bg-slate-900/80 p-4 border-b border-slate-700/50 flex justify-between items-start relative">
+            <div className="bg-slate-900/80 p-3 border-b border-slate-700/50 flex justify-between items-start relative">
                 {/* Tech Deco */}
                 <div className="absolute top-0 left-0 w-1 h-3 bg-primary-500"></div>
                 <div className="absolute top-0 right-0 w-3 h-1 bg-primary-500"></div>
 
-                <div className="space-y-1 z-10">
-                    <h3 className="text-lg font-bold text-white uppercase tracking-wider font-[Orbitron] truncate max-w-[200px]" title={job.role}>
+                <div className="space-y-0.5 z-10">
+                    <h3 className="text-base font-bold text-white uppercase tracking-wider font-[Orbitron] truncate max-w-[180px]" title={job.role}>
                         {job.role}
                     </h3>
-                    <div className="flex items-center gap-2 text-primary-400/80 text-xs font-mono uppercase tracking-widest">
-                        <span className="w-1.5 h-1.5 bg-primary-500 rounded-full animate-pulse"></span>
+                    <div className="flex items-center gap-1.5 text-primary-400/80 text-[10px] font-mono uppercase tracking-widest">
+                        <span className="w-1 h-1 bg-primary-500 rounded-full animate-pulse"></span>
                         {job.company}
                     </div>
                 </div>
 
-                <div className="flex flex-col items-end gap-2">
-                    <div className={clsx("px-2 py-0.5 border text-[10px] font-bold uppercase tracking-wider bg-slate-950/50", getStatusStyle(job.application_status))}>
+                <div className="flex flex-col items-end gap-1.5">
+                    <div className={clsx("px-1.5 py-0.5 border text-[9px] font-bold uppercase tracking-wider bg-slate-950/50", getStatusStyle(job.application_status))}>
                         {job.application_status}
                     </div>
-                    {/* Tiny Select Overlay? Or just custom select */}
-                    <select
-                        className="opacity-0 absolute inset-0 w-full cursor-pointer h-12" // Hacky overlay for entire header? No, just the badge area
-                        value={job.application_status}
-                        onChange={(e) => handleStatusChange(e.target.value as ApplicationStatus)}
-                        disabled={statusLoading}
-                        style={{ width: '100px', height: '30px', right: '16px', top: '16px', position: 'absolute' }}
-                    />
+                    {/* Select wrapper for styling */}
+                    <div className="relative group">
+                        <select
+                            value={job.application_status}
+                            onChange={(e) => onStatusChange(job.id, e.target.value as ApplicationStatus)}
+                            className="appearance-none bg-slate-900 border border-slate-700 text-slate-400 text-[9px] px-2 py-0.5 pr-5 cursor-pointer 
+                                     hover:border-primary-500 hover:text-primary-400 focus:outline-none focus:border-primary-500 transition-all uppercase tracking-wide"
+                        >
+                            {Object.values(ApplicationStatus).map(s => (
+                                <option key={s} value={s}>{s}</option>
+                            ))}
+                        </select>
+                        <ChevronDown className="w-2.5 h-2.5 text-slate-500 absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none group-hover:text-primary-500 transition-colors" />
+                    </div>
                 </div>
             </div>
 
             {/* Content Body */}
-            <div className="p-5 space-y-4 relative">
+            <div className="p-4 space-y-3 relative">
                 <div className="scanline absolute inset-0 opacity-[0.03] pointer-events-none"></div>
 
                 {/* Data Grid */}
-                <div className="grid grid-cols-1 gap-3 text-sm">
+                <div className="grid grid-cols-1 gap-2 text-xs">
                     {/* Location & Date */}
-                    <div className="flex justify-between items-center border-b border-slate-800 pb-2">
-                        <div className="flex items-center gap-2 text-slate-400">
-                            <MapPin className="w-3 h-3 text-primary-500" />
-                            <span className="font-mono text-xs">{job.location || 'REMOTE'}</span>
+                    <div className="flex justify-between items-center border-b border-slate-800 pb-1.5">
+                        <div className="flex items-center gap-1.5 text-slate-400">
+                            <MapPin className="w-2.5 h-2.5 text-primary-500" />
+                            <span className="font-mono text-[10px]">{job.location || 'REMOTE'}</span>
                         </div>
-                        <span className="font-mono text-xs text-slate-500">{format(new Date(job.created_at), 'yyyy.MM.dd')}</span>
+                        <span className="font-mono text-[10px] text-slate-500">{format(new Date(job.created_at), 'yyyy.MM.dd')}</span>
                     </div>
 
                     {/* Link */}
@@ -170,7 +175,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onEdit, onDelete, onStatu
                 <div className="pt-3 flex justify-between items-end gap-3">
                     <p className="text-[10px] text-slate-600 font-mono italic truncate max-w-[150px]">
                         {job.note ? `// ${job.note}` : '// NO_DATA'}
-                    </p>
+                    </p >
 
                     <div className="flex gap-1">
                         <button onClick={() => onEdit(job)} className="p-1.5 hover:bg-primary-500/20 text-slate-500 hover:text-primary-400 transition-colors rounded-sm">
@@ -180,8 +185,8 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onEdit, onDelete, onStatu
                             <Trash2 className="w-3.5 h-3.5" />
                         </button>
                     </div>
-                </div>
-            </div>
-        </div>
+                </div >
+            </div >
+        </div >
     )
 }

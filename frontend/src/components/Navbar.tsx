@@ -19,26 +19,25 @@ export const Navbar: React.FC = () => {
     }
 
     return (
-        <nav className="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50 tech-border border-b-primary-500/20">
+        <nav className="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50 border-b-primary-500/20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-16">
+                <div className="flex items-center justify-between h-14">
                     <div className="flex items-center gap-2">
-                        <div className="bg-primary-500/10 p-1.5 rounded border border-primary-500/30">
-                            <Briefcase className="w-6 h-6 text-primary-400" />
-                        </div>
-                        <span className="text-xl font-bold tracking-widest uppercase bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-emerald-400 font-[Orbitron]">
+                        {/* Logo and Title */}
+                        <img src="/FODENGE.png" alt="Fodenge Logo" className="w-8 h-8 object-contain" />
+                        <span className="text-lg font-bold tracking-widest uppercase bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-emerald-400 font-[Orbitron]">
                             JobTracker
                         </span>
                     </div>
 
                     {/* Desktop Menu */}
-                    <div className="hidden md:flex items-center gap-8">
-                        <Link to="/" className="link-tech flex items-center gap-2">
-                            <LayoutDashboard className="w-4 h-4" />
+                    <div className="hidden md:flex items-center gap-6">
+                        <Link to="/" className="link-tech flex items-center gap-2 text-xs">
+                            <LayoutDashboard className="w-3.5 h-3.5" />
                             <span>Dashboard</span>
                         </Link>
-                        <Link to="/friends" className="link-tech flex items-center gap-2 relative">
-                            <Users className="w-4 h-4" />
+                        <Link to="/friends" className="link-tech flex items-center gap-2 relative text-xs">
+                            <Users className="w-3.5 h-3.5" />
                             <span>Network_Nodes</span>
                             {pendingCount > 0 && (
                                 <span className="absolute -top-2 -right-3 w-4 h-4 bg-primary-500 text-slate-900 text-[10px] font-bold flex items-center justify-center rounded-sm animate-pulse">
@@ -47,15 +46,15 @@ export const Navbar: React.FC = () => {
                             )}
                         </Link>
 
-                        <div className="h-6 w-px bg-slate-800 mx-2 rotate-12" />
+                        <div className="h-5 w-px bg-slate-800 mx-2 rotate-12" />
 
                         <NotificationBell />
 
                         <button
                             onClick={handleSignOut}
-                            className="text-slate-500 hover:text-red-400 transition-colors uppercase text-xs tracking-widest flex items-center gap-2"
+                            className="text-slate-500 hover:text-red-400 transition-colors uppercase text-[10px] tracking-widest flex items-center gap-2"
                         >
-                            <LogOut className="w-4 h-4" />
+                            <LogOut className="w-3.5 h-3.5" />
                             <span className="hidden lg:inline">Disconnect</span>
                         </button>
                     </div>

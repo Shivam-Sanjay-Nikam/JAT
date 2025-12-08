@@ -34,30 +34,30 @@ export const JobList: React.FC = () => {
     }
 
     return (
-        <div className="space-y-8">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-slate-800 pb-6">
+        <div className="space-y-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-3 border-b border-slate-800 pb-4">
                 <div>
-                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 font-[Orbitron] uppercase tracking-widest mb-1">
+                    <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 font-[Orbitron] uppercase tracking-widest mb-0.5">
                         Mission_Control
                     </h1>
-                    <p className="text-primary-400 font-mono text-sm tracking-wider">
+                    <p className="text-primary-400 font-mono text-[10px] tracking-wider">
                         &gt; TRACKING {jobs.length} ACTIVE_PROTOCOLS...
                     </p>
                 </div>
                 <button
                     onClick={() => { setEditingJob(undefined); setIsFormOpen(true); }}
-                    className="btn-primary flex items-center gap-2"
+                    className="btn-primary flex items-center gap-1.5 text-xs py-2 px-4"
                 >
-                    <Plus className="w-5 h-5" />
+                    <Plus className="w-4 h-4" />
                     <span>Init_New_Protocol</span>
                 </button>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-4">
+            <div className="flex flex-col lg:flex-row gap-3">
                 <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-500 w-5 h-5" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-500 w-4 h-4" />
                     <input
-                        className="input-field pl-10"
+                        className="input-field pl-9 text-xs py-2.5"
                         placeholder="SEARCH_DATABASE..."
                         value={search}
                         onChange={e => setSearch(e.target.value)}
@@ -67,7 +67,7 @@ export const JobList: React.FC = () => {
                 <div className="flex flex-wrap gap-1 bg-slate-950/50 p-1 border border-slate-800 rounded-none w-full lg:w-auto">
                     <button
                         onClick={() => setFilterStatus('ALL')}
-                        className={`px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all flex-1 lg:flex-none text-center ${filterStatus === 'ALL' ? 'bg-primary-500 text-slate-900' : 'text-slate-500 hover:text-white hover:bg-slate-800'}`}
+                        className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-all flex-1 lg:flex-none text-center ${filterStatus === 'ALL' ? 'bg-primary-500 text-slate-900' : 'text-slate-500 hover:text-white hover:bg-slate-800'}`}
                     >
                         [ ALL_DATA ]
                     </button>
@@ -75,7 +75,7 @@ export const JobList: React.FC = () => {
                         <button
                             key={status}
                             onClick={() => setFilterStatus(status)}
-                            className={`px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all flex-1 lg:flex-none text-center ${filterStatus === status ? 'bg-primary-500 text-slate-900' : 'text-slate-500 hover:text-white hover:bg-slate-800'}`}
+                            className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-all flex-1 lg:flex-none text-center ${filterStatus === status ? 'bg-primary-500 text-slate-900' : 'text-slate-500 hover:text-white hover:bg-slate-800'}`}
                         >
                             {status}
                         </button>
