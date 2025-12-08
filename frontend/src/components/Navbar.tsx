@@ -21,19 +21,19 @@ export const Navbar: React.FC = () => {
                 <div className="flex items-center justify-between h-16">
                     <div className="flex items-center gap-2">
                         <Briefcase className="w-8 h-8 text-primary-500" />
-                        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-indigo-400">
+                        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-indigo-400 tracking-tight">
                             JobTracker
                         </span>
                     </div>
 
                     <div className="flex items-center gap-6">
-                        <Link to="/" className="text-slate-400 hover:text-white flex items-center gap-2 transition-colors">
+                        <Link to="/" className="text-slate-400 hover:text-white flex items-center gap-2 transition-colors font-medium">
                             <LayoutDashboard className="w-5 h-5" />
-                            <span className="hidden sm:inline">Dashboard</span>
+                            <span className="hidden sm:inline tracking-tight">Dashboard</span>
                         </Link>
-                        <Link to="/friends" className="text-slate-400 hover:text-white flex items-center gap-2 transition-colors">
+                        <Link to="/friends" className="text-slate-400 hover:text-white flex items-center gap-2 transition-colors font-medium">
                             <Users className="w-5 h-5" />
-                            <span className="hidden sm:inline">Friends</span>
+                            <span className="hidden sm:inline tracking-tight">Friends</span>
                         </Link>
 
                         <div className="h-6 w-px bg-slate-800 mx-2" />

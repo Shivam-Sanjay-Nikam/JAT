@@ -5,6 +5,24 @@
 @layer base {
   body {
     @apply bg-slate-950 text-slate-100 font-sans antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    font-variation-settings: normal;
+    letter-spacing: -0.01em;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold;
+    letter-spacing: -0.02em;
+  }
+  
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+    letter-spacing: 0;
+  }
+  
+  button, .btn-primary, .btn-secondary {
+    letter-spacing: -0.01em;
+    font-weight: 500;
   }
 }
 
