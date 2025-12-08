@@ -28,6 +28,7 @@ export interface FriendRequest {
     id: string
     sender_id: string
     receiver_email: string
+    sender_email?: string // Sender's email (stored when creating request)
     status: 'PENDING' | 'ACCEPTED' | 'REJECTED'
     created_at: string
 }

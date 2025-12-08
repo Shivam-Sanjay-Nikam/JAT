@@ -23,17 +23,38 @@ export const FriendRequestCard: React.FC<FriendRequestCardProps> = ({ request, o
                 const { data: { user } } = await supabase.auth.getUser()
                 if (!user) throw new Error('User not authenticated')
 
-                // Insert into friends table: (me, sender)
+                // Get sender's email from the request
+                // Check if sender_email is stored (new feature) or use receiver_email if we sent the request
+                const { data: requestData } = await supabase
+                    .from('friend_requests')
+                    .select('sender_email, receiver_email')
+                    .eq('id', request.id)
+                    .single()
+                
+                // Use sender_email if available (when they sent us request)
+                // Otherwise, if we sent them request, receiver_email is their email
+                const senderEmail = (requestData as any)?.sender_email || 
+                    (request.receiver_email && request.receiver_email !== user.email ? request.receiver_email : '')
+                
+                // Insert into friends table: (me, sender) with email
                 const { error: friendError } = await supabase
                     .from('friends')
-                    .insert({ user_id: user.id, friend_id: request.sender_id })
+                    .insert({ 
+                        user_id: user.id, 
+                        friend_id: request.sender_id,
+                        friend_email: senderEmail // Will be empty/incorrect if they sent us request
+                    })
 
                 if (friendError) throw friendError
 
-                // Also insert reverse friendship (bidirectional)
+                // Also insert reverse friendship (bidirectional) with email
                 const { error: reverseError } = await supabase
                     .from('friends')
-                    .insert({ user_id: request.sender_id, friend_id: user.id })
+                    .insert({ 
+                        user_id: request.sender_id, 
+                        friend_id: user.id,
+                        friend_email: user.email || '' // Store our email for them
+                    })
 
                 // Ignore duplicate key errors (23505) - friendship might already exist
                 if (reverseError && reverseError.code !== '23505') {

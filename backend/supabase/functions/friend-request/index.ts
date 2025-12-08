@@ -41,10 +41,15 @@ serve(async (req) => {
             )
         }
 
-        // Insert request
+        // Insert request with sender_email
         const { error: insertError } = await supabaseClient
             .from('friend_requests')
-            .insert({ sender_id: user.id, receiver_email: email, status: 'PENDING' })
+            .insert({ 
+                sender_id: user.id, 
+                receiver_email: email, 
+                sender_email: user.email || '', // Store sender's email
+                status: 'PENDING' 
+            })
 
         if (insertError) throw insertError
 
