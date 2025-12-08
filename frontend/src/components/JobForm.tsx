@@ -48,11 +48,18 @@ export const JobForm: React.FC<JobFormProps> = ({ initialData, onSubmit, onClose
     }
 
     return (
-        <div className="fixed top-0 left-0 right-0 bottom-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-sm w-full h-full">
-            <div className="glass-panel w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-in relative border border-primary-500/30 shadow-[0_0_50px_-10px_rgba(16,185,129,0.1)]">
+        <>
+            {/* Backdrop */}
+            <div
+                className="fixed top-0 left-0 right-0 bottom-0 z-[100] bg-slate-950/80 backdrop-blur-sm animate-fade-in"
+                onClick={onClose}
+            />
 
-                {/* Tech Header */}
-                <div className="p-5 border-b border-slate-700/50 flex justify-between items-center sticky top-0 bg-slate-900/95 backdrop-blur z-10">
+            {/* Side Panel */}
+            <div className="fixed top-0 right-0 bottom-0 z-[100] w-full max-w-2xl bg-slate-900 shadow-[-10px_0_50px_-10px_rgba(16,185,129,0.2)] animate-slide-in-right overflow-hidden flex flex-col">
+
+                {/* Tech Header - Fixed */}
+                <div className="p-5 border-b border-slate-700/50 flex justify-between items-center bg-slate-900/95 backdrop-blur flex-shrink-0">
                     <div>
                         <div className="text-[9px] text-primary-500 uppercase tracking-[0.2em] mb-0.5">System_Entry</div>
                         <h2 className="text-lg font-bold text-white font-[Orbitron] tracking-widest uppercase text-shadow-glow">
@@ -64,7 +71,8 @@ export const JobForm: React.FC<JobFormProps> = ({ initialData, onSubmit, onClose
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                {/* Scrollable Form Content */}
+                <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-1.5 group">
                             <label className="text-[10px] font-bold text-primary-500 uppercase tracking-widest pl-1">Target_Company</label>
@@ -204,6 +212,6 @@ export const JobForm: React.FC<JobFormProps> = ({ initialData, onSubmit, onClose
                     </div>
                 </form>
             </div>
-        </div>
+        </>
     )
 }

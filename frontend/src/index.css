@@ -103,6 +103,20 @@
   right: 0;
   height: 20px;
   background: linear-gradient(to bottom, transparent, rgba(16, 185, 129, 0.1), transparent);
-  animation: scanline 4s linear infinite;
+  animation: scanline 8s linear infinite;
   pointer-events: none;
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out;
 }
