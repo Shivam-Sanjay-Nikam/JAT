@@ -27,7 +27,7 @@ export const Navbar: React.FC = () => {
                             <Briefcase className="w-6 h-6 text-primary-400" />
                         </div>
                         <span className="text-xl font-bold tracking-widest uppercase bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-emerald-400 font-[Orbitron]">
-                            JobTracker_v2
+                            JobTracker
                         </span>
                     </div>
 
