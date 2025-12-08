@@ -35,11 +35,11 @@ export const Register: React.FC = () => {
         <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
             <div className="w-full max-w-md glass-panel rounded-2xl p-8 shadow-2xl animate-fade-in-up">
                 <div className="flex flex-col items-center mb-8">
-                    <Briefcase className="w-12 h-12 text-primary-500 mb-2" />
-                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-indigo-400">
-                        Job Application Tracker
+                    <img src="/FODENGE.png" alt="Logo" className="w-16 h-16 object-contain mb-4" />
+                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-indigo-400 text-center font-[Orbitron] uppercase tracking-wider">
+                        Fodenge
                     </h1>
-                    <p className="text-slate-400">Create your account</p>
+                    <p className="text-primary-400 font-mono text-xs tracking-widest mt-2">INIT_NEW_USER_PROTOCOL</p>
                 </div>
 
                 {error && (

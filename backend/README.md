@@ -1,4 +1,4 @@
-# Job Application Tracker - Backend
+# Fodenge - Backend
 
 This folder contains the Supabase configuration and Edge Functions.
 
