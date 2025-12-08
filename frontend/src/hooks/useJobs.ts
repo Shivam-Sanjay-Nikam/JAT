@@ -71,7 +71,8 @@ export const useJobs = () => {
                     user_id: user.id,
                     company: job.company,
                     role: job.role,
-                    status: job.application_status
+                    status: job.application_status,
+                    job_id: data.id // Pass job ID for link
                 }
             })
 
@@ -100,7 +101,8 @@ export const useJobs = () => {
                     user_id: user?.id,
                     company: data.company,
                     role: data.role,
-                    status: data.application_status
+                    status: data.application_status,
+                    job_id: id // Pass job ID for link
                 }
             })
         }

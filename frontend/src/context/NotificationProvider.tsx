@@ -8,12 +8,14 @@ interface NotificationContextType {
     notifications: Notification[]
     unreadCount: number
     markAsRead: (id: string) => Promise<void>
+    deleteNotification: (id: string) => Promise<void>
 }
 
 export const NotificationContext = createContext<NotificationContextType>({
     notifications: [],
     unreadCount: 0,
     markAsRead: async () => { },
+    deleteNotification: async () => { },
 })
 
 export const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
@@ -34,7 +36,14 @@ export const NotificationProvider = ({ children }: { children: React.ReactNode }
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false })
 
-            if (data) setNotifications(data as Notification[])
+            if (data) {
+                // Map notifications to include link from data field
+                const mappedNotifications = data.map((n: any) => ({
+                    ...n,
+                    link: n.data?.link || n.link // Support both data.link and direct link field
+                }))
+                setNotifications(mappedNotifications as Notification[])
+            }
         }
 
         fetchNotifications()
@@ -51,7 +60,13 @@ export const NotificationProvider = ({ children }: { children: React.ReactNode }
                     filter: `user_id=eq.${user.id}`,
                 },
                 (payload) => {
-                    setNotifications((prev) => [payload.new as Notification, ...prev])
+                    const newNotification = payload.new as any
+                    // Map notification to include link from data field
+                    const mappedNotification = {
+                        ...newNotification,
+                        link: newNotification.data?.link || newNotification.link
+                    }
+                    setNotifications((prev) => [mappedNotification as Notification, ...prev])
                 }
             )
             .subscribe()
@@ -72,10 +87,21 @@ export const NotificationProvider = ({ children }: { children: React.ReactNode }
         }
     }
 
+    const deleteNotification = async (id: string) => {
+        const { error } = await supabase
+            .from('notifications')
+            .delete()
+            .eq('id', id)
+
+        if (!error) {
+            setNotifications(prev => prev.filter(n => n.id !== id))
+        }
+    }
+
     const unreadCount = notifications.filter(n => !n.is_read).length
 
     return (
-        <NotificationContext.Provider value={{ notifications, unreadCount, markAsRead }}>
+        <NotificationContext.Provider value={{ notifications, unreadCount, markAsRead, deleteNotification }}>
             {children}
         </NotificationContext.Provider>
     )

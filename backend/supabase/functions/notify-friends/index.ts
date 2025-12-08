@@ -20,7 +20,7 @@ serve(async (req) => {
         )
 
         const reqData = await req.json()
-        const { user_id, company, role, status } = reqData
+        const { user_id, company, role, status, job_id } = reqData
 
         if (!user_id || !company) throw new Error('Missing data')
 
@@ -52,12 +52,19 @@ serve(async (req) => {
             return new Response(JSON.stringify({ message: 'No friends to notify' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
         }
 
-        // 3. Insert notifications
+        // 3. Insert notifications with links
         const notifications = friendIds.map(fid => ({
             user_id: fid,
             type: 'FRIEND_JOB_UPDATE',
             message: `Your friend updated a job application: ${role} at ${company} is now ${status}`,
-            data: { company, role, status, friend_id: user_id }
+            data: { 
+                company, 
+                role, 
+                status, 
+                friend_id: user_id, 
+                job_id,
+                link: '/' // Link to dashboard to see all jobs
+            }
         }))
 
         const { error: notifError } = await supabaseClient

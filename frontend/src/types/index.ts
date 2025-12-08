@@ -39,6 +39,7 @@ export interface Notification {
     type: string
     message: string
     data?: any
+    link?: string // Link to navigate when notification is clicked
     is_read: boolean
     created_at: string
 }
