@@ -15,12 +15,16 @@ export const NotificationBell: React.FC = () => {
         if ((e?.target as HTMLElement)?.closest('.delete-btn')) {
             return
         }
-        
+
         if (!notification.is_read) {
             markAsRead(notification.id)
         }
         if (notification.link) {
-            navigate(notification.link)
+            if (notification.link.startsWith('http')) {
+                window.open(notification.link, '_blank')
+            } else {
+                navigate(notification.link)
+            }
             setIsOpen(false)
         }
     }

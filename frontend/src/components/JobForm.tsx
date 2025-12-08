@@ -89,8 +89,8 @@ export const JobForm: React.FC<JobFormProps> = ({ initialData, onSubmit, onClose
                                     type="button"
                                     onClick={() => setFormData({ ...formData, application_status: status })}
                                     className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all border ${formData.application_status === status
-                                            ? 'bg-primary-500 text-white border-primary-500 shadow-lg shadow-primary-500/25'
-                                            : 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700'
+                                        ? 'bg-primary-500 text-white border-primary-500 shadow-lg shadow-primary-500/25'
+                                        : 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700'
                                         }`}
                                 >
                                     {status}

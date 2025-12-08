@@ -52,18 +52,32 @@ serve(async (req) => {
             return new Response(JSON.stringify({ message: 'No friends to notify' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
         }
 
+        // 2.5 Query job_link if job_id is present
+        let jobLink = '/'
+        if (job_id) {
+            const { data: jobData, error: jobError } = await supabaseClient
+                .from('job_applications')
+                .select('job_link')
+                .eq('id', job_id)
+                .single()
+
+            if (!jobError && jobData?.job_link) {
+                jobLink = jobData.job_link
+            }
+        }
+
         // 3. Insert notifications with links
         const notifications = friendIds.map(fid => ({
             user_id: fid,
             type: 'FRIEND_JOB_UPDATE',
             message: `Your friend updated a job application: ${role} at ${company} is now ${status}`,
-            data: { 
-                company, 
-                role, 
-                status, 
-                friend_id: user_id, 
+            data: {
+                company,
+                role,
+                status,
+                friend_id: user_id,
                 job_id,
-                link: '/' // Link to dashboard to see all jobs
+                link: jobLink // Link to actual job posting if available
             }
         }))
 
