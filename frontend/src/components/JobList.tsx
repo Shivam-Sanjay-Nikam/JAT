@@ -53,6 +53,14 @@ export const JobList: React.FC = () => {
                 </button>
             </div>
 
+            {isFormOpen && (
+                <JobForm
+                    initialData={editingJob}
+                    onSubmit={editingJob ? handleUpdate : handleCreate}
+                    onClose={() => { setIsFormOpen(false); setEditingJob(undefined); }}
+                />
+            )}
+
             <div className="flex flex-col lg:flex-row gap-3">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-500 w-4 h-4" />
@@ -110,14 +118,6 @@ export const JobList: React.FC = () => {
                     </div>
                 )}
             </div>
-
-            {isFormOpen && (
-                <JobForm
-                    initialData={editingJob}
-                    onSubmit={editingJob ? handleUpdate : handleCreate}
-                    onClose={() => { setIsFormOpen(false); setEditingJob(undefined); }}
-                />
-            )}
         </div>
     )
 }
