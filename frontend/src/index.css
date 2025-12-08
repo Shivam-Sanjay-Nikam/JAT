@@ -10,20 +10,27 @@
     font-family: 'JetBrains Mono', monospace;
     background-image: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05) 0%, rgba(0, 0, 0, 0) 50%);
   }
-  
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-bold uppercase tracking-wider;
     font-family: 'Orbitron', 'JetBrains Mono', monospace;
   }
-  
+
   /* Scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
+
   ::-webkit-scrollbar-track {
     @apply bg-slate-900;
   }
+
   ::-webkit-scrollbar-thumb {
     @apply bg-slate-700 rounded-full hover:bg-primary-500 transition-colors;
   }
@@ -31,46 +38,42 @@
 
 @layer components {
   .glass-panel {
-    @apply bg-slate-900/80 backdrop-blur-md border border-slate-700/50 shadow-[0_0_15px_-3px_rgba(0,0,0,0.5)];
+    @apply bg-slate-900/80 backdrop-blur-md border border-slate-700/50 shadow-[0_0_15px_-3px_rgba(0, 0, 0, 0.5)];
   }
 
   .tech-border {
     @apply relative border border-slate-700;
   }
+
   .tech-border::before {
     content: '';
-    @apply absolute -top-[1px] -left-[1px] w-2 h-2 border-t-2 border-l-2 border-primary-500 transition-all;
+    @apply absolute -top-[1px] -left-[1px] w-2 h-2 border-t-2 border-l-2 border-primary-500 transition-all pointer-events-none;
   }
+
   .tech-border::after {
     content: '';
-    @apply absolute -bottom-[1px] -right-[1px] w-2 h-2 border-b-2 border-r-2 border-primary-500 transition-all;
+    @apply absolute -bottom-[1px] -right-[1px] w-2 h-2 border-b-2 border-r-2 border-primary-500 transition-all pointer-events-none;
   }
-  .tech-border:hover::before, .tech-border:hover::after {
+
+  .tech-border:hover::before,
+  .tech-border:hover::after {
     @apply w-full h-full opacity-50;
   }
-  
+
   .btn-primary {
-    @apply relative overflow-hidden bg-primary-600/90 text-white px-5 py-2.5 
-           font-bold tracking-wide uppercase transition-all
-           hover:bg-primary-500 hover:shadow-[0_0_20px_-5px_rgba(16,185,129,0.5)]
-           active:scale-95 border border-primary-500/50;
+    @apply relative overflow-hidden bg-primary-600/90 text-white px-5 py-2.5 font-bold tracking-wide uppercase transition-all hover:bg-primary-500 hover:shadow-[0_0_20px_-5px_rgba(16, 185, 129, 0.5)] active:scale-95 border border-primary-500/50;
     clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
   }
 
   .btn-secondary {
-    @apply bg-slate-800/80 text-slate-300 px-5 py-2.5
-           font-bold tracking-wide uppercase transition-all
-           hover:bg-slate-700 hover:text-white border border-slate-600
-           active:scale-95;
+    @apply bg-slate-800/80 text-slate-300 px-5 py-2.5 font-bold tracking-wide uppercase transition-all hover:bg-slate-700 hover:text-white border border-slate-600 active:scale-95;
     clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
   }
-  
+
   .input-field {
-    @apply w-full bg-slate-950/50 border-b-2 border-slate-800 rounded-none px-4 py-3 
-           text-primary-400 font-mono focus:outline-none focus:border-primary-500 
-           transition-all placeholder:text-slate-600;
+    @apply w-full bg-slate-950/50 border-b-2 border-slate-800 rounded-none px-4 py-3 text-primary-400 font-mono focus:outline-none focus:border-primary-500 transition-all placeholder:text-slate-600;
   }
-  
+
   .link-tech {
     @apply text-slate-400 hover:text-primary-400 transition-colors uppercase text-xs tracking-widest;
   }
@@ -78,8 +81,13 @@
 
 /* Animations */
 @keyframes scanline {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100%); }
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(100%);
+  }
 }
 
 .scanline::after {
