@@ -30,17 +30,17 @@ export const FriendRequestCard: React.FC<FriendRequestCardProps> = ({ request, o
                     .select('sender_email, receiver_email')
                     .eq('id', request.id)
                     .single()
-                
+
                 // Use sender_email if available (when they sent us request)
                 // Otherwise, if we sent them request, receiver_email is their email
-                const senderEmail = (requestData as any)?.sender_email || 
+                const senderEmail = (requestData as any)?.sender_email ||
                     (request.receiver_email && request.receiver_email !== user.email ? request.receiver_email : '')
-                
+
                 // Insert into friends table: (me, sender) with email
                 const { error: friendError } = await supabase
                     .from('friends')
-                    .insert({ 
-                        user_id: user.id, 
+                    .insert({
+                        user_id: user.id,
                         friend_id: request.sender_id,
                         friend_email: senderEmail // Will be empty/incorrect if they sent us request
                     })
@@ -50,8 +50,8 @@ export const FriendRequestCard: React.FC<FriendRequestCardProps> = ({ request, o
                 // Also insert reverse friendship (bidirectional) with email
                 const { error: reverseError } = await supabase
                     .from('friends')
-                    .insert({ 
-                        user_id: request.sender_id, 
+                    .insert({
+                        user_id: request.sender_id,
                         friend_id: user.id,
                         friend_email: user.email || '' // Store our email for them
                     })
@@ -72,10 +72,10 @@ export const FriendRequestCard: React.FC<FriendRequestCardProps> = ({ request, o
                 .eq('id', request.id)
 
             if (error) throw error
-            
+
             // Refresh friend requests
             onUpdate()
-            
+
             // Trigger a custom event to refresh friends list
             window.dispatchEvent(new Event('friends-updated'))
         } catch (err) {
@@ -84,31 +84,37 @@ export const FriendRequestCard: React.FC<FriendRequestCardProps> = ({ request, o
     }
 
     return (
-        <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 flex justify-between items-center text-slate-200">
-            <div className="flex items-center gap-3">
-                <div className="p-2 bg-slate-700 rounded-full">
-                    <User className="w-5 h-5 text-slate-400" />
-                </div>
-                <div>
-                    <p className="font-medium">Request from</p>
-                    {/* In real app, we'd fetch sender details (name/email) via another query or view */}
-                    <p className="text-sm text-slate-400 text-xs">User ID: ...{request.sender_id.slice(-5)}</p>
+        <div className="bg-slate-900/80 border border-slate-700/50 p-4 relative group hover:border-primary-500/50 transition-all duration-300">
+            {/* Tech Decoration */}
+            <div className="absolute top-0 left-0 w-0.5 h-3 bg-primary-500/50 group-hover:bg-primary-500 transition-colors"></div>
+            <div className="absolute bottom-0 right-0 w-3 h-0.5 bg-primary-500/50 group-hover:bg-primary-500 transition-colors"></div>
+
+            <div className="flex justify-between items-start mb-3">
+                <div className="flex items-center gap-3">
+                    <div className="p-1.5 bg-primary-500/10 border border-primary-500/20 rounded-sm">
+                        <User className="w-4 h-4 text-primary-400" />
+                    </div>
+                    <div>
+                        <p className="font-bold text-xs uppercase tracking-wider text-primary-400 mb-0.5">Incoming_Signal</p>
+                        <p className="text-[10px] font-mono text-slate-400">ID: {request.sender_id.slice(0, 8)}...</p>
+                    </div>
                 </div>
             </div>
-            <div className="flex gap-2">
+
+            <div className="flex gap-2 mt-2">
                 <button
                     onClick={() => handleAction('ACCEPTED')}
-                    className="p-1.5 bg-green-500/10 text-green-400 hover:bg-green-500/20 rounded-md transition-colors"
-                    title="Accept"
+                    className="flex-1 py-1.5 bg-green-500/10 text-green-400 border border-green-500/20 hover:bg-green-500/20 hover:border-green-500/50 transition-all text-[10px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5"
                 >
-                    <Check className="w-5 h-5" />
+                    <Check className="w-3 h-3" />
+                    Accept
                 </button>
                 <button
                     onClick={() => handleAction('REJECTED')}
-                    className="p-1.5 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-md transition-colors"
-                    title="Reject"
+                    className="flex-1 py-1.5 bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 hover:border-red-500/50 transition-all text-[10px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5"
                 >
-                    <X className="w-5 h-5" />
+                    <X className="w-3 h-3" />
+                    Reject
                 </button>
             </div>
         </div>
