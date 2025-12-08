@@ -51,7 +51,12 @@ export const FriendRequestCard: React.FC<FriendRequestCardProps> = ({ request, o
                 .eq('id', request.id)
 
             if (error) throw error
+            
+            // Refresh friend requests
             onUpdate()
+            
+            // Trigger a custom event to refresh friends list
+            window.dispatchEvent(new Event('friends-updated'))
         } catch (err) {
             console.error('Error updating request:', err)
         }
