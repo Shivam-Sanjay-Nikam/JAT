@@ -15,7 +15,7 @@ export const Friends: React.FC = () => {
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState('')
     const { pendingRequests: requests, refresh: fetchRequests } = useFriendRequests()
-    const { friends, loading: friendsLoading, refresh: refreshFriends } = useFriends()
+    const { friends, loading: friendsLoading, refresh: refreshFriends, setFriends } = useFriends()
 
     useEffect(() => {
         // Listen for friend updates
@@ -46,29 +46,31 @@ export const Friends: React.FC = () => {
         setEmail('')
     }
 
-    const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; friendshipId: string; userId: string; friendId: string } | null>(null)
+    const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; userId: string; friendId: string } | null>(null)
 
     const handleRemoveFriend = async () => {
-        if (!deleteConfirm) return
+        if (!deleteConfirm || !user) return
 
-        const { friendshipId, userId, friendId } = deleteConfirm
+        const { userId, friendId } = deleteConfirm
 
-        // Delete both directions of friendship
-        const { error: error1 } = await supabase
+        // Delete all friendship records between these two users (both directions)
+        // This handles the case where user_id=A,friend_id=B OR user_id=B,friend_id=A
+        const { error } = await supabase
             .from('friends')
             .delete()
-            .eq('user_id', userId)
-            .eq('friend_id', friendId)
+            .or(`and(user_id.eq.${userId},friend_id.eq.${friendId}),and(user_id.eq.${friendId},friend_id.eq.${userId})`)
 
-        const { error: error2 } = await supabase
-            .from('friends')
-            .delete()
-            .eq('user_id', friendId)
-            .eq('friend_id', userId)
-
-        if (error1 || error2) {
-            console.error('Error removing friend:', error1 || error2)
+        if (error) {
+            console.error('Error removing friend:', error)
         } else {
+            // Manually update the local state to remove the friend immediately
+            setFriends(prev => prev.filter(f =>
+                !(
+                    (f.user_id === userId && f.friend_id === friendId) ||
+                    (f.user_id === friendId && f.friend_id === userId)
+                )
+            ))
+            // Also refresh from server
             refreshFriends()
         }
 
@@ -172,7 +174,6 @@ export const Friends: React.FC = () => {
                                                     <button
                                                         onClick={() => setDeleteConfirm({
                                                             show: true,
-                                                            friendshipId: friend.id,
                                                             userId: friend.user_id,
                                                             friendId: friend.friend_id
                                                         })}
