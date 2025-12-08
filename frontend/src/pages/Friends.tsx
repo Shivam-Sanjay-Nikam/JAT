@@ -107,14 +107,14 @@ export const Friends: React.FC = () => {
                                     <input
                                         type="email"
                                         required
-                                        placeholder="INPUT_OPERATOR_EMAIL"
+                                        placeholder="INPUT_FRIEND_EMAIL"
                                         className="w-full bg-slate-950 border-none text-slate-200 text-xs font-mono py-2.5 pl-8 focus:ring-0 placeholder:text-slate-600 tracking-wide"
                                         value={email}
                                         onChange={e => setEmail(e.target.value)}
                                     />
                                 </div>
                                 <button type="submit" disabled={loading} className="bg-primary-500/10 hover:bg-primary-500/20 text-primary-400 border border-primary-500/30 px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all hover:shadow-[0_0_10px_-3px_rgba(16,185,129,0.3)]">
-                                    {loading ? 'Transmitting...' : 'Ping_Node'}
+                                    {loading ? 'Transmitting...' : 'Ping_Request'}
                                 </button>
                             </form>
                             {message && <p className="mt-1.5 ml-1 text-[10px] font-mono text-primary-400/80">&gt;&gt; {message}</p>}
