@@ -5,33 +5,14 @@ import { supabase } from '../lib/supabase'
 import { FriendRequestCard } from '../components/FriendRequestCard'
 import { FriendRequest } from '../types'
 import { UserPlus, Users as UsersIcon } from 'lucide-react'
+import { useFriendRequests } from '../hooks/useFriendRequests'
 
 export const Friends: React.FC = () => {
     const [email, setEmail] = useState('')
-    const [requests, setRequests] = useState<FriendRequest[]>([])
     const [friendsCount, setFriendsCount] = useState(0) // Placeholder for actual friend list
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState('')
-
-    const fetchRequests = async () => {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) return
-
-        // Since we store receiver_email, we need to match it.
-        // However, our policy says 'receiver_email = auth.email'.
-        // Let's rely on RLS.
-        const { data } = await supabase
-            .from('friend_requests')
-            .select('*')
-            .eq('status', 'PENDING')
-            .eq('receiver_email', user.email)
-
-        if (data) setRequests(data as FriendRequest[])
-    }
-
-    useEffect(() => {
-        fetchRequests()
-    }, [])
+    const { pendingRequests: requests, refresh: fetchRequests } = useFriendRequests()
 
     const sendRequest = async (e: React.FormEvent) => {
         e.preventDefault()

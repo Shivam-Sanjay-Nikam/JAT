@@ -5,10 +5,12 @@ import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
 import { LayoutDashboard, Users, LogOut, Briefcase } from 'lucide-react'
 import { NotificationBell } from './NotificationBell'
+import { useFriendRequests } from '../hooks/useFriendRequests'
 
 export const Navbar: React.FC = () => {
     const { user } = useAuth()
     const navigate = useNavigate()
+    const { pendingCount } = useFriendRequests()
 
     const handleSignOut = async () => {
         await supabase.auth.signOut()
@@ -31,9 +33,14 @@ export const Navbar: React.FC = () => {
                             <LayoutDashboard className="w-5 h-5" />
                             <span className="hidden sm:inline tracking-tight">Dashboard</span>
                         </Link>
-                        <Link to="/friends" className="text-slate-400 hover:text-white flex items-center gap-2 transition-colors font-medium">
+                        <Link to="/friends" className="text-slate-400 hover:text-white flex items-center gap-2 transition-colors font-medium relative">
                             <Users className="w-5 h-5" />
                             <span className="hidden sm:inline tracking-tight">Friends</span>
+                            {pendingCount > 0 && (
+                                <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary-500 text-white text-xs flex items-center justify-center rounded-full font-semibold animate-pulse">
+                                    {pendingCount > 9 ? '9+' : pendingCount}
+                                </span>
+                            )}
                         </Link>
 
                         <div className="h-6 w-px bg-slate-800 mx-2" />

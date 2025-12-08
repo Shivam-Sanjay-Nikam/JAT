@@ -19,12 +19,26 @@ export const FriendRequestCard: React.FC<FriendRequestCardProps> = ({ request, o
 
         try {
             if (status === 'ACCEPTED') {
+                // Get current user
+                const { data: { user } } = await supabase.auth.getUser()
+                if (!user) throw new Error('User not authenticated')
+
                 // Insert into friends table: (me, sender)
                 const { error: friendError } = await supabase
                     .from('friends')
-                    .insert({ user_id: (await supabase.auth.getUser()).data.user?.id, friend_id: request.sender_id })
+                    .insert({ user_id: user.id, friend_id: request.sender_id })
 
                 if (friendError) throw friendError
+
+                // Also insert reverse friendship (bidirectional)
+                const { error: reverseError } = await supabase
+                    .from('friends')
+                    .insert({ user_id: request.sender_id, friend_id: user.id })
+
+                // Ignore duplicate key errors (23505) - friendship might already exist
+                if (reverseError && reverseError.code !== '23505') {
+                    console.warn('Reverse friendship insert failed:', reverseError)
+                }
 
                 // Insert reverse friendship if needed by schema (we used UNIQUE(user_id, friend_id), so maybe bidirectional logic is needed or just one row implies both?)
                 // Our 'friends' schema (user_id, friend_id) usually implies direction unless query handles OR.

@@ -16,6 +16,11 @@ ON friends
 FOR SELECT
 USING (auth.uid() = user_id OR auth.uid() = friend_id);
 
+CREATE POLICY "Users can add friends"
+ON friends
+FOR INSERT
+WITH CHECK (auth.uid() = user_id);
+
 -- POLICIES FOR FRIEND REQUESTS
 CREATE POLICY "Users can view outgoing requests"
 ON friend_requests
@@ -37,6 +42,12 @@ CREATE POLICY "Users can view incoming requests based on email"
 ON friend_requests
 FOR SELECT
 USING (receiver_email = auth.jwt() ->> 'email');
+
+CREATE POLICY "Users can update friend requests they received"
+ON friend_requests
+FOR UPDATE
+USING (receiver_email = auth.jwt() ->> 'email')
+WITH CHECK (receiver_email = auth.jwt() ->> 'email');
 
 -- POLICIES FOR NOTIFICATIONS
 CREATE POLICY "Users can manage their own notifications"
