@@ -48,7 +48,7 @@ export const JobForm: React.FC<JobFormProps> = ({ initialData, onSubmit, onClose
     }
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-sm min-h-screen">
             <div className="glass-panel w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-in relative border border-primary-500/30 shadow-[0_0_50px_-10px_rgba(16,185,129,0.1)]">
 
                 {/* Tech Header */}
