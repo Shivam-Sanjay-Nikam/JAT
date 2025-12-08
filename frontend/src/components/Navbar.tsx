@@ -46,6 +46,11 @@ export const Navbar: React.FC = () => {
                             )}
                         </Link>
 
+                        <Link to="/help" className="link-tech flex items-center gap-2 text-xs">
+                            <BookOpen className="w-3.5 h-3.5" />
+                            <span>System_Manual</span>
+                        </Link>
+
                         <div className="h-5 w-px bg-slate-800 mx-2 rotate-12" />
 
                         <NotificationBell />
@@ -88,6 +93,10 @@ export const Navbar: React.FC = () => {
                                     {pendingCount}
                                 </span>
                             )}
+                        </Link>
+                        <Link to="/help" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 text-slate-300 hover:text-primary-400 font-mono text-sm uppercase tracking-wider p-2 rounded hover:bg-slate-800/50">
+                            <BookOpen className="w-5 h-5" />
+                            System_Manual
                         </Link>
                         <button onClick={handleSignOut} className="w-full flex items-center gap-3 text-red-400 hover:text-red-300 font-mono text-sm uppercase tracking-wider p-2 rounded hover:bg-slate-800/50">
                             <LogOut className="w-5 h-5" />
