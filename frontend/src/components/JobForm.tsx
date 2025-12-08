@@ -10,7 +10,10 @@ interface JobFormProps {
     onClose: () => void
 }
 
+// ... imports ...
+
 export const JobForm: React.FC<JobFormProps> = ({ initialData, onSubmit, onClose }) => {
+    // ... state ...
     const [formData, setFormData] = useState<Partial<JobApplication>>({
         company: '',
         role: '',
@@ -45,53 +48,59 @@ export const JobForm: React.FC<JobFormProps> = ({ initialData, onSubmit, onClose
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-            <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl animate-fade-in">
-                <div className="p-6 border-b border-slate-800 flex justify-between items-center sticky top-0 bg-slate-900/95 backdrop-blur z-10">
-                    <h2 className="text-xl font-bold text-white">
-                        {initialData ? 'Edit Application' : 'New Application'}
-                    </h2>
-                    <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-sm">
+            <div className="glass-panel w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-in relative border border-primary-500/30 shadow-[0_0_50px_-10px_rgba(16,185,129,0.1)]">
+
+                {/* Tech Header */}
+                <div className="p-6 border-b border-slate-700/50 flex justify-between items-center sticky top-0 bg-slate-900/95 backdrop-blur z-10">
+                    <div>
+                        <div className="text-[10px] text-primary-500 uppercase tracking-[0.2em] mb-1">System_Entry</div>
+                        <h2 className="text-xl font-bold text-white font-[Orbitron] tracking-widest uppercase text-shadow-glow">
+                            {initialData ? 'Edit_Protocol' : 'New_Protocol'}
+                        </h2>
+                    </div>
+                    <button onClick={onClose} className="text-slate-400 hover:text-red-400 transition-colors p-2 hover:bg-red-500/10 rounded-full">
                         <X className="w-6 h-6" />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300">Company</label>
+                <form onSubmit={handleSubmit} className="p-8 space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-2 group">
+                            <label className="text-xs font-bold text-primary-500 uppercase tracking-widest pl-1">Target_Company</label>
                             <input
                                 required
-                                className="input-field"
+                                className="input-field group-focus-within:border-primary-500 transition-colors"
                                 value={formData.company}
                                 onChange={e => setFormData({ ...formData, company: e.target.value })}
-                                placeholder="Google, Amazon, Startup Inc."
+                                placeholder="ENTER_CORP_NAME"
                             />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300">Role</label>
+                        <div className="space-y-2 group">
+                            <label className="text-xs font-bold text-primary-500 uppercase tracking-widest pl-1">Role_Designation</label>
                             <input
                                 required
-                                className="input-field"
+                                className="input-field group-focus-within:border-primary-500 transition-colors"
                                 value={formData.role}
                                 onChange={e => setFormData({ ...formData, role: e.target.value })}
-                                placeholder="Software Engineer"
+                                placeholder="ENTER_ROLE_ID"
                             />
                         </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-300">Status</label>
+                    <div className="space-y-3">
+                        <label className="text-xs font-bold text-primary-500 uppercase tracking-widest pl-1">Status_Check</label>
                         <div className="flex gap-2 flex-wrap">
                             {Object.values(ApplicationStatus).map(status => (
                                 <button
                                     key={status}
                                     type="button"
                                     onClick={() => setFormData({ ...formData, application_status: status })}
-                                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all border ${formData.application_status === status
-                                        ? 'bg-primary-500 text-white border-primary-500 shadow-lg shadow-primary-500/25'
-                                        : 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700'
+                                    className={`px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all border ${formData.application_status === status
+                                        ? 'bg-primary-500/20 text-primary-400 border-primary-500 shadow-[0_0_15px_-5px_rgba(16,185,129,0.5)]'
+                                        : 'bg-slate-900/50 text-slate-500 border-slate-700 hover:border-slate-500 hover:text-slate-300'
                                         }`}
+                                    style={{ clipPath: 'polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)' }}
                                 >
                                     {status}
                                 </button>
@@ -99,97 +108,98 @@ export const JobForm: React.FC<JobFormProps> = ({ initialData, onSubmit, onClose
                         </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-300">Link</label>
+                    <div className="space-y-2 group">
+                        <label className="text-xs font-bold text-primary-500 uppercase tracking-widest pl-1">Secure_Uplink</label>
                         <input
-                            className="input-field"
+                            className="input-field group-focus-within:border-primary-500 transition-colors"
                             value={formData.job_link || ''}
                             onChange={e => setFormData({ ...formData, job_link: e.target.value })}
-                            placeholder="https://..."
+                            placeholder="HTTPS://..."
                         />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300">Email Used</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-2 group">
+                            <label className="text-xs font-bold text-primary-500 uppercase tracking-widest pl-1">User_Identity</label>
                             <input
                                 type="email"
-                                className="input-field"
+                                className="input-field group-focus-within:border-primary-500 transition-colors"
                                 value={formData.email_used || ''}
                                 onChange={e => setFormData({ ...formData, email_used: e.target.value })}
+                                placeholder="EMAIL_ADDRESS"
                             />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300">
-                                {initialData ? 'Update Password (Optional)' : 'Password Used (Encrypted)'}
+                        <div className="space-y-2 group">
+                            <label className="text-xs font-bold text-primary-500 uppercase tracking-widest pl-1">
+                                {initialData ? 'Update_Access_Key' : 'Access_Key_Encrypted'}
                             </label>
                             <input
                                 type="password"
-                                className="input-field"
+                                className="input-field group-focus-within:border-primary-500 transition-colors"
                                 value={passwordRaw}
                                 onChange={e => setPasswordRaw(e.target.value)}
-                                placeholder={initialData ? "Leave blank to keep unchanged" : "Password to account"}
+                                placeholder={initialData ? "UNCHANGED" : "PASSWORD"}
                             />
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300">Location</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-2 group">
+                            <label className="text-xs font-bold text-primary-500 uppercase tracking-widest pl-1">Geo_Coordinates</label>
                             <input
-                                className="input-field"
+                                className="input-field group-focus-within:border-primary-500 transition-colors"
                                 value={formData.location || ''}
                                 onChange={e => setFormData({ ...formData, location: e.target.value })}
-                                placeholder="Remote, NYC, SF"
+                                placeholder="CITY_STATE"
                             />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300">Referral</label>
+                        <div className="space-y-2 group">
+                            <label className="text-xs font-bold text-primary-500 uppercase tracking-widest pl-1">Referral_Source</label>
                             <input
-                                className="input-field"
+                                className="input-field group-focus-within:border-primary-500 transition-colors"
                                 value={formData.referral || ''}
                                 onChange={e => setFormData({ ...formData, referral: e.target.value })}
-                                placeholder="Referrer name"
+                                placeholder="AGENT_NAME"
                             />
                         </div>
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-300">Resume (PDF)</label>
+                        <label className="text-xs font-bold text-primary-500 uppercase tracking-widest pl-1">Data_Packet (Values .PDF)</label>
                         <FileUpload
                             onFileSelect={setResumeFile}
                             selectedFile={resumeFile}
                             accept=".pdf"
                         />
                         {initialData?.resume_url && !resumeFile && (
-                            <p className="text-xs text-slate-500">Currently has a resume uploaded.</p>
+                            <p className="text-[10px] text-green-400 font-mono mt-1">&gt; EXISTING_PACKET_DETECTED</p>
                         )}
                     </div>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-300">Notes</label>
+                    <div className="space-y-2 group">
+                        <label className="text-xs font-bold text-primary-500 uppercase tracking-widest pl-1">Log_Entry</label>
                         <textarea
-                            className="input-field min-h-[100px]"
+                            className="input-field min-h-[100px] group-focus-within:border-primary-500 transition-colors"
                             value={formData.note || ''}
                             onChange={e => setFormData({ ...formData, note: e.target.value })}
-                            placeholder="Any additional thoughts..."
+                            placeholder="ADDITIONAL_DATA..."
                         />
                     </div>
 
-                    <div className="pt-4 flex justify-end gap-3">
+                    <div className="pt-6 flex justify-end gap-4 border-t border-slate-700/50">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+                            className="btn-secondary"
                         >
-                            Cancel
+                            Cancel_Op
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
                             className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {loading ? 'Saving...' : 'Save Application'}
+                            {loading ? 'Processing...' : 'Commit_Data'}
                         </button>
                     </div>
                 </form>

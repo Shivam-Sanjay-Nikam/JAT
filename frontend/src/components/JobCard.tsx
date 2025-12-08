@@ -21,38 +21,37 @@ const statusColors = {
     [ApplicationStatus.OFFER]: 'bg-green-500/10 text-green-400 border-green-500/20',
 }
 
+// ... imports existing ...
+
 export const JobCard: React.FC<JobCardProps> = ({ job, onEdit, onDelete, onStatusChange }) => {
+    // ... state ...
     const [showPassword, setShowPassword] = useState(false)
     const [passwordPlain, setPasswordPlain] = useState<string | null>(null)
     const [passwordLoading, setPasswordLoading] = useState(false)
     const [statusLoading, setStatusLoading] = useState(false)
 
+    // ... handlers ...
     const handleDownloadResume = async () => {
         if (!job.resume_url) return
         const { data } = await supabase.storage
             .from('resumes')
-            .createSignedUrl(job.resume_url, 60) // 1 minute expiry
-
-        if (data?.signedUrl) {
-            window.open(data.signedUrl, '_blank')
-        }
+            .createSignedUrl(job.resume_url, 60)
+        if (data?.signedUrl) window.open(data.signedUrl, '_blank')
     }
 
     const handleTogglePassword = async () => {
         if (!job.password_used) return
         const next = !showPassword
         setShowPassword(next)
-
         if (next && !passwordPlain && !passwordLoading) {
             setPasswordLoading(true)
             try {
-                const { data, error } = await supabase.functions.invoke('decrypt-password', {
+                const { data } = await supabase.functions.invoke('decrypt-password', {
                     body: { encrypted: job.password_used }
                 })
-                if (error) throw error
                 setPasswordPlain(data?.password || '')
             } catch (err) {
-                console.error('Failed to decrypt password', err)
+                console.error(err)
             } finally {
                 setPasswordLoading(false)
             }
@@ -64,117 +63,123 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onEdit, onDelete, onStatu
         setStatusLoading(true)
         try {
             await onStatusChange(job.id, status)
-        } catch (err) {
-            console.error('Failed to update status', err)
         } finally {
             setStatusLoading(false)
         }
     }
 
+    // Status Badge Helpers
+    const getStatusStyle = (s: ApplicationStatus) => {
+        switch (s) {
+            case ApplicationStatus.OFFER: return 'text-green-400 border-green-500/50 shadow-[0_0_10px_-2px_rgba(74,222,128,0.3)]'
+            case ApplicationStatus.REJECTED: return 'text-red-400 border-red-500/50'
+            case ApplicationStatus.INTERVIEW: return 'text-purple-400 border-purple-500/50 shadow-[0_0_10px_-2px_rgba(192,132,252,0.3)]'
+            case ApplicationStatus.OA: return 'text-yellow-400 border-yellow-500/50'
+            default: return 'text-blue-400 border-blue-500/50'
+        }
+    }
+
     return (
-        <div className="glass-panel rounded-xl p-6 transition-all hover:scale-[1.01] hover:shadow-2xl hover:shadow-primary-500/5 group relative overflow-hidden">
-            <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-primary-500/5 via-transparent to-indigo-500/5" />
-            <div className="flex justify-between items-start mb-4">
-                <div>
-                    <h3 className="text-xl font-bold text-slate-100 mb-1">{job.role}</h3>
-                    <p className="text-slate-400 font-medium text-lg">{job.company}</p>
+        <div className="glass-panel rounded-sm p-0 overflow-hidden group hover:border-primary-500/50 transition-colors duration-300">
+            {/* Header Bar */}
+            <div className="bg-slate-900/80 p-4 border-b border-slate-700/50 flex justify-between items-start relative">
+                {/* Tech Deco */}
+                <div className="absolute top-0 left-0 w-1 h-3 bg-primary-500"></div>
+                <div className="absolute top-0 right-0 w-3 h-1 bg-primary-500"></div>
+
+                <div className="space-y-1 z-10">
+                    <h3 className="text-lg font-bold text-white uppercase tracking-wider font-[Orbitron] truncate max-w-[200px]" title={job.role}>
+                        {job.role}
+                    </h3>
+                    <div className="flex items-center gap-2 text-primary-400/80 text-xs font-mono uppercase tracking-widest">
+                        <span className="w-1.5 h-1.5 bg-primary-500 rounded-full animate-pulse"></span>
+                        {job.company}
+                    </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className={clsx("px-3 py-1 rounded-full text-xs font-semibold border", statusColors[job.application_status])}>
+
+                <div className="flex flex-col items-end gap-2">
+                    <div className={clsx("px-2 py-0.5 border text-[10px] font-bold uppercase tracking-wider bg-slate-950/50", getStatusStyle(job.application_status))}>
                         {job.application_status}
                     </div>
+                    {/* Tiny Select Overlay? Or just custom select */}
                     <select
-                        className="bg-slate-900/70 border border-slate-700 text-xs text-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        className="opacity-0 absolute inset-0 w-full cursor-pointer h-12" // Hacky overlay for entire header? No, just the badge area
                         value={job.application_status}
                         onChange={(e) => handleStatusChange(e.target.value as ApplicationStatus)}
                         disabled={statusLoading}
-                    >
-                        {Object.values(ApplicationStatus).map(status => (
-                            <option key={status} value={status}>{status}</option>
-                        ))}
-                    </select>
+                        style={{ width: '100px', height: '30px', right: '16px', top: '16px', position: 'absolute' }}
+                    />
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div className="space-y-3">
-                    {job.location && (
-                        <div className="flex items-center gap-2 text-slate-400 text-sm">
-                            <MapPin className="w-4 h-4" />
-                            <span>{job.location}</span>
-                        </div>
-                    )}
-                    {job.job_link && (
-                        <a href={job.job_link} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-primary-400 hover:text-primary-300 text-sm transition-colors w-fit">
-                            <LinkIcon className="w-4 h-4" />
-                            <span className="truncate max-w-[200px]">{job.job_link}</span>
-                            <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </a>
-                    )}
-                    <div className="flex items-center gap-2 text-slate-500 text-sm">
-                        <Calendar className="w-4 h-4" />
-                        <span>Applied {format(new Date(job.created_at), 'MMM d, yyyy')}</span>
-                    </div>
-                </div>
+            {/* Content Body */}
+            <div className="p-5 space-y-4 relative">
+                <div className="scanline absolute inset-0 opacity-[0.03] pointer-events-none"></div>
 
-                <div className="space-y-3">
+                {/* Data Grid */}
+                <div className="grid grid-cols-1 gap-3 text-sm">
+                    {/* Location & Date */}
+                    <div className="flex justify-between items-center border-b border-slate-800 pb-2">
+                        <div className="flex items-center gap-2 text-slate-400">
+                            <MapPin className="w-3 h-3 text-primary-500" />
+                            <span className="font-mono text-xs">{job.location || 'REMOTE'}</span>
+                        </div>
+                        <span className="font-mono text-xs text-slate-500">{format(new Date(job.created_at), 'yyyy.MM.dd')}</span>
+                    </div>
+
+                    {/* Link */}
+                    {job.job_link && (
+                        <div className="flex items-center gap-2 overflow-hidden">
+                            <LinkIcon className="w-3 h-3 text-slate-500 flex-shrink-0" />
+                            <a href={job.job_link} target="_blank" rel="noreferrer" className="font-mono text-xs text-primary-400 hover:text-white truncate transition-colors uppercase">
+                                {job.job_link.replace('https://', '')}
+                            </a>
+                        </div>
+                    )}
+
+                    {/* Email */}
                     {job.email_used && (
-                        <div className="text-sm text-slate-400">
-                            <span className="text-slate-500">Email:</span> {job.email_used}
+                        <div className="font-mono text-xs text-slate-400">
+                            <span className="text-slate-600 uppercase">UID:</span> {job.email_used}
                         </div>
                     )}
+
+                    {/* Password */}
                     {job.password_used && (
-                        <div className="flex items-center gap-2 text-sm text-slate-400">
-                            <Lock className="w-4 h-4 text-slate-500" />
-                            <div className="relative group/pass">
-                                <span
-                                    className="font-mono bg-slate-800 px-2 py-0.5 rounded cursor-pointer select-all flex items-center gap-2"
-                                    onClick={handleTogglePassword}
-                                >
-                                    {passwordLoading ? (
-                                        <RefreshCw className="w-4 h-4 animate-spin text-slate-500" />
-                                    ) : showPassword ? (
-                                        passwordPlain || '(unable to decrypt)'
-                                    ) : (
-                                        '••••••••'
-                                    )}
-                                </span>
-                                <span className="absolute left-full ml-2 text-xs bg-slate-800 px-2 py-1 rounded opacity-0 group-hover/pass:opacity-100 transition-opacity whitespace-nowrap">
-                                    {showPassword ? 'Decrypted (only you)' : 'Click to decrypt'}
-                                </span>
-                            </div>
+                        <div className="flex items-center gap-2 font-mono text-xs bg-slate-950/50 p-2 border border-slate-800 rounded-sm">
+                            <Lock className="w-3 h-3 text-slate-500" />
+                            <span onClick={handleTogglePassword} className="cursor-pointer hover:text-primary-400 transition-colors select-none">
+                                {passwordLoading ? 'DECRYPTING...' : showPassword ? passwordPlain : '*********'}
+                            </span>
                         </div>
                     )}
+
+                    {/* Resume */}
                     {job.resume_url && (
                         <button
                             onClick={handleDownloadResume}
-                            className="flex items-center gap-2 text-sm text-primary-400 hover:text-primary-300 transition-colors"
+                            className="flex items-center gap-2 text-xs font-mono text-slate-400 hover:text-primary-400 transition-colors w-fit group/btn"
                         >
-                            <FileText className="w-4 h-4" />
-                            <span>View Resume</span>
+                            <FileText className="w-3 h-3 group-hover/btn:text-primary-500" />
+                            [VIEW_DATA_LOG]
                         </button>
                     )}
                 </div>
-            </div>
 
-            {/* Footer / Actions */}
-            <div className="pt-4 border-t border-slate-700/50 flex justify-between items-center">
-                <p className="text-sm text-slate-500 italic max-w-[70%] truncate">
-                    {job.note || "No notes"}
-                </p>
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => onEdit(job)}
-                        className="p-2 text-slate-400 hover:text-primary-400 hover:bg-primary-400/10 rounded-lg transition-all"
-                    >
-                        <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                        onClick={() => onDelete(job.id)}
-                        className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
-                    >
-                        <Trash2 className="w-4 h-4" />
-                    </button>
+                {/* Footer Notes & Actions */}
+                <div className="pt-3 flex justify-between items-end gap-3">
+                    <p className="text-[10px] text-slate-600 font-mono italic truncate max-w-[150px]">
+                        {job.note ? `// ${job.note}` : '// NO_DATA'}
+                    </p>
+
+                    <div className="flex gap-1">
+                        <button onClick={() => onEdit(job)} className="p-1.5 hover:bg-primary-500/20 text-slate-500 hover:text-primary-400 transition-colors rounded-sm">
+                            <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button onClick={() => onDelete(job.id)} className="p-1.5 hover:bg-red-500/20 text-slate-500 hover:text-red-400 transition-colors rounded-sm">
+                            <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
