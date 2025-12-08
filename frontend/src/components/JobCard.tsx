@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react'
 import { JobApplication, ApplicationStatus } from '../types'
-import { Calendar, MapPin, Link as LinkIcon, FileText, Lock, Edit2, Trash2, ExternalLink } from 'lucide-react'
+import { Calendar, MapPin, Link as LinkIcon, FileText, Lock, Edit2, Trash2, ExternalLink, RefreshCw } from 'lucide-react'
 import { format } from 'date-fns'
 import clsx from 'clsx'
 import { supabase } from '../lib/supabase'
@@ -22,6 +22,8 @@ const statusColors = {
 
 export const JobCard: React.FC<JobCardProps> = ({ job, onEdit, onDelete }) => {
     const [showPassword, setShowPassword] = useState(false)
+    const [passwordPlain, setPasswordPlain] = useState<string | null>(null)
+    const [passwordLoading, setPasswordLoading] = useState(false)
 
     const handleDownloadResume = async () => {
         if (!job.resume_url) return
@@ -31,6 +33,27 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onEdit, onDelete }) => {
 
         if (data?.signedUrl) {
             window.open(data.signedUrl, '_blank')
+        }
+    }
+
+    const handleTogglePassword = async () => {
+        if (!job.password_used) return
+        const next = !showPassword
+        setShowPassword(next)
+
+        if (next && !passwordPlain && !passwordLoading) {
+            setPasswordLoading(true)
+            try {
+                const { data, error } = await supabase.functions.invoke('decrypt-password', {
+                    body: { encrypted: job.password_used }
+                })
+                if (error) throw error
+                setPasswordPlain(data?.password || '')
+            } catch (err) {
+                console.error('Failed to decrypt password', err)
+            } finally {
+                setPasswordLoading(false)
+            }
         }
     }
 
@@ -77,11 +100,20 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onEdit, onDelete }) => {
                         <div className="flex items-center gap-2 text-sm text-slate-400">
                             <Lock className="w-4 h-4 text-slate-500" />
                             <div className="relative group/pass">
-                                <span className="font-mono bg-slate-800 px-2 py-0.5 rounded cursor-pointer select-all" onClick={() => setShowPassword(!showPassword)}>
-                                    {showPassword ? job.password_used.substring(0, 20) + '...' : '••••••••'}
+                                <span
+                                    className="font-mono bg-slate-800 px-2 py-0.5 rounded cursor-pointer select-all flex items-center gap-2"
+                                    onClick={handleTogglePassword}
+                                >
+                                    {passwordLoading ? (
+                                        <RefreshCw className="w-4 h-4 animate-spin text-slate-500" />
+                                    ) : showPassword ? (
+                                        passwordPlain || '(unable to decrypt)'
+                                    ) : (
+                                        '••••••••'
+                                    )}
                                 </span>
                                 <span className="absolute left-full ml-2 text-xs bg-slate-800 px-2 py-1 rounded opacity-0 group-hover/pass:opacity-100 transition-opacity whitespace-nowrap">
-                                    Encrypted
+                                    {showPassword ? 'Decrypted (only you)' : 'Click to decrypt'}
                                 </span>
                             </div>
                         </div>
