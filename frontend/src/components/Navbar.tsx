@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
-import { LayoutDashboard, Users, LogOut, Briefcase, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Users, LogOut, Briefcase, Menu, X, BookOpen } from 'lucide-react'
 import { NotificationBell } from './NotificationBell'
 import { useFriendRequests } from '../hooks/useFriendRequests'
 

@@ -7,6 +7,7 @@ import { Login } from './pages/Login'
 import { Register } from './pages/Register'
 import { Dashboard } from './pages/Dashboard'
 import { Friends } from './pages/Friends'
+import { Help } from './pages/Help'
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { session, loading } = useAuth()
@@ -39,6 +40,12 @@ function App() {
             <Route path="/friends" element={
               <ProtectedRoute>
                 <Friends />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/help" element={
+              <ProtectedRoute>
+                <Help />
               </ProtectedRoute>
             } />
 

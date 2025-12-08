@@ -99,7 +99,7 @@ export const Friends: React.FC = () => {
                                         type="email"
                                         required
                                         placeholder="INPUT_OPERATOR_EMAIL"
-                                        className="w-full bg-slate-950 border-none text-slate-200 text-xs font-mono py-2.5 pl-8 focus:ring-0 placeholder:text-slate-600 uppercase tracking-wide"
+                                        className="w-full bg-slate-950 border-none text-slate-200 text-xs font-mono py-2.5 pl-8 focus:ring-0 placeholder:text-slate-600 tracking-wide"
                                         value={email}
                                         onChange={e => setEmail(e.target.value)}
                                     />
