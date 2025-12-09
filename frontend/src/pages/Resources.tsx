@@ -4,6 +4,7 @@ import { Navbar } from '../components/Navbar'
 import { ResourceList } from '../components/ResourceList'
 import { ResourceForm } from '../components/ResourceForm'
 import { NoteViewer } from '../components/NoteViewer'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 import { useResources } from '../hooks/useResources'
 import { Resource } from '../types'
 import { BookOpen, FileText, Link as LinkIcon, StickyNote } from 'lucide-react'
@@ -25,6 +26,7 @@ export const Resources: React.FC = () => {
     const [isFormOpen, setIsFormOpen] = useState(false)
     const [editingResource, setEditingResource] = useState<Resource | null>(null)
     const [viewingNote, setViewingNote] = useState<Resource | null>(null)
+    const [deletingResourceId, setDeletingResourceId] = useState<string | null>(null)
 
     const handleAddClick = () => {
         setEditingResource(null)
@@ -44,6 +46,17 @@ export const Resources: React.FC = () => {
         }
         setIsFormOpen(false)
         setEditingResource(null)
+    }
+
+    const handleDeleteClick = (id: string) => {
+        setDeletingResourceId(id)
+    }
+
+    const handleConfirmDelete = async () => {
+        if (deletingResourceId) {
+            await deleteResource(deletingResourceId)
+            setDeletingResourceId(null)
+        }
     }
 
     const handleView = (resource: Resource) => {
@@ -125,7 +138,7 @@ export const Resources: React.FC = () => {
                     onFilterChange={setFilterType}
                     onAddClick={handleAddClick}
                     onEdit={handleEdit}
-                    onDelete={deleteResource}
+                    onDelete={handleDeleteClick}
                     onView={handleView}
                     counts={counts}
                 />
@@ -148,6 +161,17 @@ export const Resources: React.FC = () => {
                 isOpen={!!viewingNote}
                 note={viewingNote}
                 onClose={() => setViewingNote(null)}
+            />
+
+            {/* Delete Confirmation Dialog */}
+            <ConfirmDialog
+                isOpen={!!deletingResourceId}
+                title="Delete Resource"
+                message="Are you sure you want to delete this resource? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                onConfirm={handleConfirmDelete}
+                onCancel={() => setDeletingResourceId(null)}
             />
         </div>
     )

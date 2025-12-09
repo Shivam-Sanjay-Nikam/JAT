@@ -126,9 +126,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({ resource, onEdit, on
                     <button
                         onClick={(e) => {
                             e.stopPropagation()
-                            if (confirm('Delete this resource?')) {
-                                onDelete(resource.id)
-                            }
+                            onDelete(resource.id)
                         }}
                         className="p-2 text-slate-500 hover:text-red-400 transition-colors"
                         title="Delete"
