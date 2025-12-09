@@ -24,6 +24,7 @@ CREATE TABLE friends (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES auth.users NOT NULL,
   friend_id UUID REFERENCES auth.users NOT NULL,
+  friend_email TEXT, -- Friend's email for display purposes
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, friend_id)
 );
@@ -32,6 +33,7 @@ CREATE TABLE friends (
 CREATE TABLE friend_requests (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   sender_id UUID REFERENCES auth.users NOT NULL,
+  sender_email TEXT, -- Sender's email for display purposes
   receiver_email TEXT NOT NULL, -- We might not know the UUID yet if we search by email
   status TEXT DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'ACCEPTED', 'REJECTED')),
   created_at TIMESTAMPTZ DEFAULT NOW()
@@ -51,7 +53,9 @@ CREATE TABLE notifications (
 -- INDEXES
 CREATE INDEX idx_job_applications_user_id ON job_applications(user_id);
 CREATE INDEX idx_friends_user_id ON friends(user_id);
+CREATE INDEX idx_friends_friend_email ON friends(friend_email);
 CREATE INDEX idx_friend_requests_receiver_email ON friend_requests(receiver_email);
+CREATE INDEX idx_friend_requests_sender_email ON friend_requests(sender_email);
 CREATE INDEX idx_notifications_user_id ON notifications(user_id);
 
 -- TRIGGERS FOR UPDATED_AT

@@ -65,10 +65,11 @@ serve(async (req) => {
                 .or(`user_id.eq.${user_id},friend_id.eq.${user_id}`)
 
             if (!friendsError && friends && friends.length > 0) {
-                // Extract friend IDs (exclude the current user)
-                const friendIds = friends.map(f =>
+                // Extract friend IDs (exclude the current user) and deduplicate
+                // Using Set to avoid duplicate notifications from bidirectional friendships
+                const friendIds = [...new Set(friends.map(f =>
                     f.user_id === user_id ? f.friend_id : f.user_id
-                )
+                ))]
 
                 // Check if notification already sent today to avoid duplicates
                 const { data: existingNotifs } = await supabaseClient
@@ -89,6 +90,7 @@ serve(async (req) => {
                         message: `🔥 ${userEmail.split('@')[0]} completed all tasks today and maintained their streak!`,
                         data: {
                             streak_user_id: user_id,
+                            streak_user_email: userEmail,
                             date: date,
                             total_tasks: totalTasks
                         },
