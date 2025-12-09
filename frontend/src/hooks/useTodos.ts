@@ -6,6 +6,12 @@ import { Todo } from '../types'
 export const useTodos = () => {
     const [todos, setTodos] = useState<Todo[]>([])
     const [loading, setLoading] = useState(true)
+    const [selectedDate, setSelectedDate] = useState(new Date())
+
+    // Get date in YYYY-MM-DD format (local timezone)
+    const getDateString = (date: Date) => {
+        return date.toISOString().split('T')[0]
+    }
 
     // Get today's date in YYYY-MM-DD format (local timezone)
     const getTodayDate = () => {
@@ -13,9 +19,9 @@ export const useTodos = () => {
         return today.toISOString().split('T')[0]
     }
 
-    const fetchTodayTodos = async () => {
+    const fetchTodosForDate = async (date: Date) => {
         setLoading(true)
-        const todayDate = getTodayDate()
+        const dateStr = getDateString(date)
 
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) {
@@ -27,7 +33,7 @@ export const useTodos = () => {
             .from('todos')
             .select('*')
             .eq('user_id', user.id)
-            .eq('date', todayDate)
+            .eq('date', dateStr)
             .order('created_at', { ascending: true })
 
         if (error) {
@@ -42,14 +48,14 @@ export const useTodos = () => {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return
 
-        const todayDate = getTodayDate()
+        const dateStr = getDateString(selectedDate)
 
         const { data, error } = await supabase
             .from('todos')
             .insert({
                 user_id: user.id,
                 title,
-                date: todayDate,
+                date: dateStr,
                 is_completed: false
             })
             .select()
@@ -60,7 +66,7 @@ export const useTodos = () => {
         } else if (data) {
             setTodos(prev => [...prev, data])
             // Check completion status after adding
-            await checkDailyCompletion()
+            await checkDailyCompletion(dateStr)
         }
     }
 
@@ -80,7 +86,7 @@ export const useTodos = () => {
         } else if (data) {
             setTodos(prev => prev.map(t => t.id === id ? data : t))
             // Check completion status after toggling
-            await checkDailyCompletion()
+            await checkDailyCompletion(getDateString(selectedDate))
         }
     }
 
@@ -95,21 +101,19 @@ export const useTodos = () => {
         } else {
             setTodos(prev => prev.filter(t => t.id !== id))
             // Check completion status after deleting
-            await checkDailyCompletion()
+            await checkDailyCompletion(getDateString(selectedDate))
         }
     }
 
-    const checkDailyCompletion = async () => {
+    const checkDailyCompletion = async (dateStr: string) => {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return
-
-        const todayDate = getTodayDate()
 
         // Call Edge Function to check and update daily completion
         const { data, error } = await supabase.functions.invoke('check-daily-completion', {
             body: {
                 user_id: user.id,
-                date: todayDate
+                date: dateStr
             }
         })
 
@@ -120,8 +124,27 @@ export const useTodos = () => {
         }
     }
 
+    // Navigate to previous day
+    const goToPreviousDay = () => {
+        const newDate = new Date(selectedDate)
+        newDate.setDate(newDate.getDate() - 1)
+        setSelectedDate(newDate)
+    }
+
+    // Navigate to next day
+    const goToNextDay = () => {
+        const newDate = new Date(selectedDate)
+        newDate.setDate(newDate.getDate() + 1)
+        setSelectedDate(newDate)
+    }
+
+    // Go to today
+    const goToToday = () => {
+        setSelectedDate(new Date())
+    }
+
     useEffect(() => {
-        fetchTodayTodos()
+        fetchTodosForDate(selectedDate)
 
         // Subscribe to real-time changes
         const setupSubscription = async () => {
@@ -129,7 +152,7 @@ export const useTodos = () => {
 
             if (!userData) return
 
-            const todayDate = getTodayDate()
+            const dateStr = getDateString(selectedDate)
             const subscription = supabase
                 .channel('todos-changes')
                 .on('postgres_changes', {
@@ -140,12 +163,12 @@ export const useTodos = () => {
                 }, (payload) => {
                     if (payload.eventType === 'INSERT') {
                         const newTodo = payload.new as Todo
-                        if (newTodo.date === todayDate) {
+                        if (newTodo.date === dateStr) {
                             setTodos(prev => [...prev, newTodo])
                         }
                     } else if (payload.eventType === 'UPDATE') {
                         const updatedTodo = payload.new as Todo
-                        if (updatedTodo.date === todayDate) {
+                        if (updatedTodo.date === dateStr) {
                             setTodos(prev => prev.map(t => t.id === updatedTodo.id ? updatedTodo : t))
                         }
                     } else if (payload.eventType === 'DELETE') {
@@ -160,11 +183,32 @@ export const useTodos = () => {
         }
 
         setupSubscription()
-    }, [])
+    }, [selectedDate]) // Re-fetch when selectedDate changes
+
+    // Midnight refresh - check every minute if day has changed
+    useEffect(() => {
+        const checkMidnight = setInterval(() => {
+            const today = getTodayDate()
+            const selected = getDateString(selectedDate)
+
+            // If we're viewing "today" but the actual date has changed, update to new today
+            if (selected !== today && getDateString(new Date()) === today) {
+                // Only auto-update if we were viewing today
+                const wasViewingToday = selected === getTodayDate()
+                if (wasViewingToday) {
+                    setSelectedDate(new Date())
+                }
+            }
+        }, 60000) // Check every minute
+
+        return () => clearInterval(checkMidnight)
+    }, [selectedDate])
 
     const completionPercentage = todos.length > 0
         ? Math.round((todos.filter(t => t.is_completed).length / todos.length) * 100)
         : 0
+
+    const isToday = getDateString(selectedDate) === getTodayDate()
 
     return {
         todos,
@@ -172,9 +216,14 @@ export const useTodos = () => {
         addTodo,
         toggleTodo,
         deleteTodo,
-        refresh: fetchTodayTodos,
+        refresh: () => fetchTodosForDate(selectedDate),
         completionPercentage,
         completedCount: todos.filter(t => t.is_completed).length,
-        totalCount: todos.length
+        totalCount: todos.length,
+        selectedDate,
+        isToday,
+        goToPreviousDay,
+        goToNextDay,
+        goToToday
     }
 }

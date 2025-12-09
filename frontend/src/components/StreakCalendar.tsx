@@ -1,20 +1,21 @@
 
 import React, { useState } from 'react'
 import { useStreak } from '../hooks/useStreak'
-import { Flame, Trophy, Calendar as CalendarIcon } from 'lucide-react'
+import { Flame, Trophy, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react'
 
 export const StreakCalendar: React.FC = () => {
     const { currentStreak, longestStreak, completionHistory, loading } = useStreak()
     const [hoveredDate, setHoveredDate] = useState<string | null>(null)
+    const [currentMonth, setCurrentMonth] = useState(new Date())
 
-    // Generate current month's days
+
+    // Generate calendar days for the selected month
     const generateCalendarDays = () => {
         const days = []
-        const today = new Date()
-        const year = today.getFullYear()
-        const month = today.getMonth()
+        const year = currentMonth.getFullYear()
+        const month = currentMonth.getMonth()
 
-        // Get first and last day of current month
+        // Get first and last day of selected month
         const firstDay = new Date(year, month, 1)
         const lastDay = new Date(year, month + 1, 0)
 
@@ -37,10 +38,13 @@ export const StreakCalendar: React.FC = () => {
             const dateStr = date.toISOString().split('T')[0]
             const completion = completionHistory.find(c => c.date === dateStr)
 
+            const today = new Date()
+            const isToday = dateStr === today.toISOString().split('T')[0]
+
             days.push({
                 date: dateStr,
                 completion: completion || null,
-                isToday: dateStr === today.toISOString().split('T')[0],
+                isToday,
                 isEmpty: false
             })
         }
@@ -115,14 +119,37 @@ export const StreakCalendar: React.FC = () => {
 
             {/* Calendar Header */}
             <div className="border-b border-slate-800 pb-3">
-                <div className="flex items-center gap-2">
-                    <CalendarIcon className="w-4 h-4 text-primary-500" />
-                    <h3 className="text-sm font-bold text-white uppercase tracking-widest font-[Orbitron]">
-                        Activity_Calendar
-                    </h3>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <CalendarIcon className="w-4 h-4 text-primary-500" />
+                        <h3 className="text-sm font-bold text-white uppercase tracking-widest font-[Orbitron]">
+                            Activity_Calendar
+                        </h3>
+                    </div>
+
+                    {/* Month Navigation */}
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}
+                            className="p-1 text-slate-500 hover:text-primary-400 transition-colors"
+                            title="Previous month"
+                        >
+                            <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <span className="text-xs font-mono text-slate-400 min-w-[100px] text-center">
+                            {currentMonth.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase()}
+                        </span>
+                        <button
+                            onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}
+                            className="p-1 text-slate-500 hover:text-primary-400 transition-colors"
+                            title="Next month"
+                        >
+                            <ChevronRight className="w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
                 <p className="text-[10px] font-mono text-slate-500 mt-1">
-                    {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }).toUpperCase()} // 🔥 = 100% COMPLETION
+                    🔥 = 100% COMPLETION
                 </p>
             </div>
 

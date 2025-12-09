@@ -36,9 +36,12 @@ export const Navbar: React.FC = () => {
                             <LayoutDashboard className="w-3.5 h-3.5" />
                             <span>Dashboard</span>
                         </Link>
-                        <Link to="/todo" className="link-tech flex items-center gap-2 text-xs">
+                        <Link to="/todo" className="link-tech flex items-center gap-2 text-xs relative">
                             <CheckSquare className="w-3.5 h-3.5" />
                             <span>Tasks</span>
+                            <span className="absolute -top-1 -right-6 bg-primary-500 text-slate-900 text-[8px] font-bold px-1.5 py-0.5 rounded-sm animate-pulse">
+                                NEW
+                            </span>
                         </Link>
                         <Link to="/friends" className="link-tech flex items-center gap-2 relative text-xs">
                             <Users className="w-3.5 h-3.5" />
@@ -89,9 +92,12 @@ export const Navbar: React.FC = () => {
                             <LayoutDashboard className="w-5 h-5" />
                             Dashboard
                         </Link>
-                        <Link to="/todo" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 text-slate-300 hover:text-primary-400 font-mono text-sm uppercase tracking-wider p-2 rounded hover:bg-slate-800/50">
+                        <Link to="/todo" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 text-slate-300 hover:text-primary-400 font-mono text-sm uppercase tracking-wider p-2 rounded hover:bg-slate-800/50 relative">
                             <CheckSquare className="w-5 h-5" />
                             Tasks
+                            <span className="bg-primary-500 text-slate-900 text-[9px] font-bold px-2 py-0.5 rounded-sm animate-pulse">
+                                NEW
+                            </span>
                         </Link>
                         <Link to="/friends" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 text-slate-300 hover:text-primary-400 font-mono text-sm uppercase tracking-wider p-2 rounded hover:bg-slate-800/50">
                             <Users className="w-5 h-5" />

@@ -2,10 +2,24 @@
 import React, { useState } from 'react'
 import { useTodos } from '../hooks/useTodos'
 import { TodoItem } from './TodoItem'
-import { Plus, ListTodo } from 'lucide-react'
+import { Plus, ListTodo, ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
 
 export const TodoList: React.FC = () => {
-    const { todos, loading, addTodo, toggleTodo, deleteTodo, completionPercentage, completedCount, totalCount } = useTodos()
+    const {
+        todos,
+        loading,
+        addTodo,
+        toggleTodo,
+        deleteTodo,
+        completionPercentage,
+        completedCount,
+        totalCount,
+        selectedDate,
+        isToday,
+        goToPreviousDay,
+        goToNextDay,
+        goToToday
+    } = useTodos()
     const [newTodoTitle, setNewTodoTitle] = useState('')
     const [isAdding, setIsAdding] = useState(false)
 
@@ -19,8 +33,52 @@ export const TodoList: React.FC = () => {
         setIsAdding(false)
     }
 
+    // Format the selected date
+    const formattedDate = selectedDate.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    })
+
     return (
         <div className="space-y-4">
+            {/* Date Navigation Header */}
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={goToPreviousDay}
+                        className="p-1.5 text-slate-500 hover:text-primary-400 transition-colors border border-slate-800 hover:border-primary-500/30"
+                        title="Previous day"
+                    >
+                        <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-primary-500" />
+                            <span className="text-sm font-mono text-slate-300">
+                                {formattedDate}
+                            </span>
+                        </div>
+                        {!isToday && (
+                            <button
+                                onClick={goToToday}
+                                className="text-[10px] font-mono text-primary-400 hover:text-primary-300 transition-colors text-left"
+                            >
+                                ← Back to Today
+                            </button>
+                        )}
+                    </div>
+                    <button
+                        onClick={goToNextDay}
+                        className="p-1.5 text-slate-500 hover:text-primary-400 transition-colors border border-slate-800 hover:border-primary-500/30"
+                        title="Next day"
+                    >
+                        <ChevronRight className="w-4 h-4" />
+                    </button>
+                </div>
+            </div>
+
             {/* Header with Progress */}
             <div className="border-b border-slate-800 pb-4">
                 <div className="flex items-center justify-between mb-2">
