@@ -106,12 +106,18 @@ export const useTodos = () => {
         const todayDate = getTodayDate()
 
         // Call Edge Function to check and update daily completion
-        await supabase.functions.invoke('check-daily-completion', {
+        const { data, error } = await supabase.functions.invoke('check-daily-completion', {
             body: {
                 user_id: user.id,
                 date: todayDate
             }
         })
+
+        if (error) {
+            console.error('Error checking daily completion:', error)
+        } else if (data) {
+            console.log('Daily completion updated:', data)
+        }
     }
 
     useEffect(() => {

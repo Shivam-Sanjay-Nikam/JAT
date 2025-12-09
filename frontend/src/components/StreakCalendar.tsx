@@ -7,22 +7,41 @@ export const StreakCalendar: React.FC = () => {
     const { currentStreak, longestStreak, completionHistory, loading } = useStreak()
     const [hoveredDate, setHoveredDate] = useState<string | null>(null)
 
-    // Generate last 365 days
+    // Generate current month's days
     const generateCalendarDays = () => {
         const days = []
         const today = new Date()
+        const year = today.getFullYear()
+        const month = today.getMonth()
 
-        for (let i = 364; i >= 0; i--) {
-            const date = new Date(today)
-            date.setDate(date.getDate() - i)
+        // Get first and last day of current month
+        const firstDay = new Date(year, month, 1)
+        const lastDay = new Date(year, month + 1, 0)
+
+        // Get day of week for first day (0 = Sunday, 6 = Saturday)
+        const firstDayOfWeek = firstDay.getDay()
+
+        // Add empty cells for days before month starts
+        for (let i = 0; i < firstDayOfWeek; i++) {
+            days.push({
+                date: '',
+                completion: null,
+                isToday: false,
+                isEmpty: true
+            })
+        }
+
+        // Add all days of the month
+        for (let day = 1; day <= lastDay.getDate(); day++) {
+            const date = new Date(year, month, day)
             const dateStr = date.toISOString().split('T')[0]
-
             const completion = completionHistory.find(c => c.date === dateStr)
 
             days.push({
                 date: dateStr,
                 completion: completion || null,
-                isToday: dateStr === today.toISOString().split('T')[0]
+                isToday: dateStr === today.toISOString().split('T')[0],
+                isEmpty: false
             })
         }
 
@@ -31,7 +50,7 @@ export const StreakCalendar: React.FC = () => {
 
     const calendarDays = generateCalendarDays()
 
-    // Group days by week for grid layout
+    // Group days by week for grid layout (7 days per week)
     const weeks: typeof calendarDays[] = []
     for (let i = 0; i < calendarDays.length; i += 7) {
         weeks.push(calendarDays.slice(i, i + 7))
@@ -103,7 +122,7 @@ export const StreakCalendar: React.FC = () => {
                     </h3>
                 </div>
                 <p className="text-[10px] font-mono text-slate-500 mt-1">
-                    LAST 365 DAYS // 🔥 = 100% COMPLETION
+                    {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }).toUpperCase()} // 🔥 = 100% COMPLETION
                 </p>
             </div>
 
@@ -116,51 +135,41 @@ export const StreakCalendar: React.FC = () => {
                 ) : (
                     <div className="overflow-x-auto pb-2">
                         <div className="inline-block">
-                            {/* Month Labels */}
-                            <div className="flex gap-1 mb-2">
-                                {weeks.map((week, weekIdx) => {
-                                    // Get the first day of this week to determine the month
-                                    const firstDay = week[0]
-                                    const date = new Date(firstDay.date)
-                                    const monthName = date.toLocaleDateString('en-US', { month: 'short' })
-
-                                    // Only show month label if it's the first week of the month or first week overall
-                                    const showLabel = weekIdx === 0 ||
-                                        (weekIdx > 0 && new Date(weeks[weekIdx - 1][0].date).getMonth() !== date.getMonth())
-
-                                    return (
-                                        <div key={`month-${weekIdx}`} className="w-3 flex items-center justify-center">
-                                            {showLabel && (
-                                                <span className="text-[8px] font-mono text-slate-500 uppercase tracking-wider whitespace-nowrap -rotate-0">
-                                                    {monthName}
-                                                </span>
-                                            )}
-                                        </div>
-                                    )
-                                })}
+                            {/* Weekday Headers */}
+                            <div className="grid grid-cols-7 gap-1 mb-2">
+                                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+                                    <div key={day} className="w-10 h-6 flex items-center justify-center">
+                                        <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wider">
+                                            {day}
+                                        </span>
+                                    </div>
+                                ))}
                             </div>
 
                             {/* Calendar Grid */}
-                            <div className="inline-flex gap-1">
-                                {weeks.map((week, weekIdx) => (
-                                    <div key={weekIdx} className="flex flex-col gap-1">
-                                        {week.map((day) => (
-                                            <div
-                                                key={day.date}
-                                                className={`w-3 h-3 border transition-all cursor-pointer hover:scale-125 relative ${getCellColor(day.completion)} ${day.isToday ? 'ring-1 ring-primary-400 ring-offset-1 ring-offset-slate-950' : ''
-                                                    }`}
-                                                onMouseEnter={() => setHoveredDate(day.date)}
-                                                onMouseLeave={() => setHoveredDate(null)}
-                                                title={day.date}
-                                            >
-                                                {day.completion?.completion_percentage === 100 && (
-                                                    <div className="absolute inset-0 flex items-center justify-center text-[6px]">
-                                                        🔥
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
+                            <div className="grid grid-cols-7 gap-1">
+                                {calendarDays.map((day, idx) => (
+                                    day.isEmpty ? (
+                                        <div key={`empty-${idx}`} className="w-10 h-10" />
+                                    ) : (
+                                        <div
+                                            key={day.date}
+                                            className={`w-10 h-10 border transition-all cursor-pointer hover:scale-105 relative flex items-center justify-center ${getCellColor(day.completion)} ${day.isToday ? 'ring-2 ring-primary-400 ring-offset-1 ring-offset-slate-950' : ''
+                                                }`}
+                                            onMouseEnter={() => setHoveredDate(day.date)}
+                                            onMouseLeave={() => setHoveredDate(null)}
+                                            title={day.date}
+                                        >
+                                            <span className="text-[10px] font-mono text-slate-300 z-10">
+                                                {new Date(day.date).getDate()}
+                                            </span>
+                                            {day.completion?.completion_percentage === 100 && (
+                                                <div className="absolute top-0 right-0 text-[10px] leading-none">
+                                                    🔥
+                                                </div>
+                                            )}
+                                        </div>
+                                    )
                                 ))}
                             </div>
                         </div>
