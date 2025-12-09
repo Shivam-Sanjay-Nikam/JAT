@@ -35,11 +35,18 @@ export const StreakCalendar: React.FC = () => {
         // Add all days of the month
         for (let day = 1; day <= lastDay.getDate(); day++) {
             const date = new Date(year, month, day)
-            const dateStr = date.toISOString().split('T')[0]
+            const dateYear = date.getFullYear()
+            const dateMonth = String(date.getMonth() + 1).padStart(2, '0')
+            const dateDay = String(date.getDate()).padStart(2, '0')
+            const dateStr = `${dateYear}-${dateMonth}-${dateDay}`
             const completion = completionHistory.find(c => c.date === dateStr)
 
             const today = new Date()
-            const isToday = dateStr === today.toISOString().split('T')[0]
+            const todayYear = today.getFullYear()
+            const todayMonth = String(today.getMonth() + 1).padStart(2, '0')
+            const todayDay = String(today.getDate()).padStart(2, '0')
+            const todayStr = `${todayYear}-${todayMonth}-${todayDay}`
+            const isToday = dateStr === todayStr
 
             days.push({
                 date: dateStr,
