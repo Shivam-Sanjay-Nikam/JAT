@@ -9,6 +9,7 @@ import { Dashboard } from './pages/Dashboard'
 import { Friends } from './pages/Friends'
 import { Help } from './pages/Help'
 import { Todo } from './pages/Todo'
+import { Resources } from './pages/Resources'
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { session, loading } = useAuth()
@@ -47,6 +48,12 @@ function App() {
             <Route path="/friends" element={
               <ProtectedRoute>
                 <Friends />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/resources" element={
+              <ProtectedRoute>
+                <Resources />
               </ProtectedRoute>
             } />
 

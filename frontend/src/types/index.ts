@@ -64,3 +64,17 @@ export interface DailyCompletion {
     created_at: string
     updated_at: string
 }
+
+export type ResourceType = 'PDF' | 'LINK' | 'NOTE'
+
+export interface Resource {
+    id: string
+    user_id: string
+    title: string
+    type: ResourceType
+    content: string // File path for PDF, URL for LINK, text content for NOTE
+    description?: string
+    tags?: string[]
+    created_at: string
+    updated_at: string
+}

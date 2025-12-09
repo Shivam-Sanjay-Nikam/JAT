@@ -40,6 +40,10 @@ export const Navbar: React.FC = () => {
                             <CheckSquare className="w-3.5 h-3.5" />
                             <span>Tasks</span>
                         </Link>
+                        <Link to="/resources" className="link-tech flex items-center gap-2 text-xs">
+                            <BookOpen className="w-3.5 h-3.5" />
+                            <span>Resources</span>
+                        </Link>
                         <Link to="/friends" className="link-tech flex items-center gap-2 relative text-xs">
                             <Users className="w-3.5 h-3.5" />
                             <span>Network_Nodes</span>
@@ -92,6 +96,10 @@ export const Navbar: React.FC = () => {
                         <Link to="/todo" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 text-slate-300 hover:text-primary-400 font-mono text-sm uppercase tracking-wider p-2 rounded hover:bg-slate-800/50">
                             <CheckSquare className="w-5 h-5" />
                             Tasks
+                        </Link>
+                        <Link to="/resources" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 text-slate-300 hover:text-primary-400 font-mono text-sm uppercase tracking-wider p-2 rounded hover:bg-slate-800/50">
+                            <BookOpen className="w-5 h-5" />
+                            Resources
                         </Link>
                         <Link to="/friends" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 text-slate-300 hover:text-primary-400 font-mono text-sm uppercase tracking-wider p-2 rounded hover:bg-slate-800/50">
                             <Users className="w-5 h-5" />
