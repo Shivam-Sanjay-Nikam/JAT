@@ -43,3 +43,24 @@ export interface Notification {
     is_read: boolean
     created_at: string
 }
+
+export interface Todo {
+    id: string
+    user_id: string
+    title: string
+    is_completed: boolean
+    date: string // ISO date string (YYYY-MM-DD)
+    created_at: string
+    updated_at: string
+}
+
+export interface DailyCompletion {
+    id: string
+    user_id: string
+    date: string // ISO date string (YYYY-MM-DD)
+    total_tasks: number
+    completed_tasks: number
+    completion_percentage: number // 0-100
+    created_at: string
+    updated_at: string
+}
