@@ -1,7 +1,7 @@
 
 import React from 'react'
 import { Resource } from '../types'
-import { FileText, Link as LinkIcon, StickyNote, ExternalLink, Pencil, Trash2, Download } from 'lucide-react'
+import { FileText, Link as LinkIcon, StickyNote, ExternalLink, Pencil, Trash2, Download, Eye } from 'lucide-react'
 
 interface ResourceCardProps {
     resource: Resource
@@ -25,94 +25,36 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({ resource, onEdit, on
     const getTypeColor = () => {
         switch (resource.type) {
             case 'PDF':
-                return 'border-red-500/30 bg-red-500/5'
+                return 'border-red-500/30 bg-red-500/5 hover:border-red-500/50'
             case 'LINK':
-                return 'border-blue-500/30 bg-blue-500/5'
+                return 'border-blue-500/30 bg-blue-500/5 hover:border-blue-500/50'
             case 'NOTE':
-                return 'border-yellow-500/30 bg-yellow-500/5'
+                return 'border-yellow-500/30 bg-yellow-500/5 hover:border-yellow-500/50'
         }
     }
 
     return (
         <div
-            className={`border ${getTypeColor()} p-4 hover:border-primary-500/50 transition-all cursor-pointer group relative overflow-hidden`}
-            onClick={() => onView(resource)}
+            className={`border ${getTypeColor()} p-4 transition-all group relative overflow-hidden flex items-center gap-4`}
         >
             {/* Hover gradient effect */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-            <div className="relative z-10">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                        {getIcon()}
-                        <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wider">
-                            {resource.type}
-                        </span>
-                    </div>
-
-                    {/* Action buttons */}
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        {resource.type === 'PDF' && (
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation()
-                                    onView(resource)
-                                }}
-                                className="p-1.5 text-slate-500 hover:text-primary-400 transition-colors"
-                                title="Download PDF"
-                            >
-                                <Download className="w-3.5 h-3.5" />
-                            </button>
-                        )}
-                        {resource.type === 'LINK' && (
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation()
-                                    window.open(resource.content, '_blank')
-                                }}
-                                className="p-1.5 text-slate-500 hover:text-blue-400 transition-colors"
-                                title="Open link"
-                            >
-                                <ExternalLink className="w-3.5 h-3.5" />
-                            </button>
-                        )}
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                onEdit(resource)
-                            }}
-                            className="p-1.5 text-slate-500 hover:text-primary-400 transition-colors"
-                            title="Edit"
-                        >
-                            <Pencil className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                if (confirm('Delete this resource?')) {
-                                    onDelete(resource.id)
-                                }
-                            }}
-                            className="p-1.5 text-slate-500 hover:text-red-400 transition-colors"
-                            title="Delete"
-                        >
-                            <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                    </div>
+            <div className="relative z-10 flex items-center gap-4 flex-1">
+                {/* Icon and Type */}
+                <div className="flex items-center gap-3">
+                    {getIcon()}
+                    <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wider min-w-[40px]">
+                        {resource.type}
+                    </span>
                 </div>
 
                 {/* Title */}
-                <h3 className="text-white font-semibold mb-2 line-clamp-2">
-                    {resource.title}
-                </h3>
-
-                {/* Description */}
-                {resource.description && (
-                    <p className="text-slate-400 text-sm mb-3 line-clamp-2">
-                        {resource.description}
-                    </p>
-                )}
+                <div className="flex-1 min-w-0">
+                    <h3 className="text-white font-semibold truncate">
+                        {resource.title}
+                    </h3>
+                </div>
 
                 {/* Tags */}
                 {resource.tags && resource.tags.length > 0 && (
@@ -133,11 +75,66 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({ resource, onEdit, on
                     </div>
                 )}
 
-                {/* Footer - Date */}
-                <div className="mt-3 pt-3 border-t border-slate-800">
-                    <span className="text-[9px] font-mono text-slate-600">
-                        {new Date(resource.created_at).toLocaleDateString()}
-                    </span>
+                {/* Action buttons */}
+                <div className="flex items-center gap-1">
+                    {resource.type === 'PDF' && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                onView(resource)
+                            }}
+                            className="p-2 text-slate-500 hover:text-red-400 transition-colors"
+                            title="Download PDF"
+                        >
+                            <Download className="w-4 h-4" />
+                        </button>
+                    )}
+                    {resource.type === 'LINK' && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                window.open(resource.content, '_blank')
+                            }}
+                            className="p-2 text-slate-500 hover:text-blue-400 transition-colors"
+                            title="Open link"
+                        >
+                            <ExternalLink className="w-4 h-4" />
+                        </button>
+                    )}
+                    {resource.type === 'NOTE' && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                onView(resource)
+                            }}
+                            className="p-2 text-slate-500 hover:text-yellow-400 transition-colors"
+                            title="View note"
+                        >
+                            <Eye className="w-4 h-4" />
+                        </button>
+                    )}
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            onEdit(resource)
+                        }}
+                        className="p-2 text-slate-500 hover:text-primary-400 transition-colors"
+                        title="Edit"
+                    >
+                        <Pencil className="w-4 h-4" />
+                    </button>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            if (confirm('Delete this resource?')) {
+                                onDelete(resource.id)
+                            }
+                        }}
+                        className="p-2 text-slate-500 hover:text-red-400 transition-colors"
+                        title="Delete"
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </button>
                 </div>
             </div>
         </div>

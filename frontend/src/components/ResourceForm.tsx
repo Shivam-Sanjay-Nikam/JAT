@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Resource, ResourceType } from '../types'
 import { X, Upload, Link as LinkIcon, FileText, StickyNote } from 'lucide-react'
 
@@ -18,13 +17,32 @@ export const ResourceForm: React.FC<ResourceFormProps> = ({
     onUploadPDF,
     editingResource
 }) => {
-    const [type, setType] = useState<ResourceType>(editingResource?.type || 'LINK')
-    const [title, setTitle] = useState(editingResource?.title || '')
-    const [content, setContent] = useState(editingResource?.content || '')
-    const [description, setDescription] = useState(editingResource?.description || '')
-    const [tags, setTags] = useState(editingResource?.tags?.join(', ') || '')
+    const [type, setType] = useState<ResourceType>('LINK')
+    const [title, setTitle] = useState('')
+    const [content, setContent] = useState('')
+    const [description, setDescription] = useState('')
+    const [tags, setTags] = useState('')
     const [uploading, setUploading] = useState(false)
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
+
+    // Update form values when editingResource changes
+    useEffect(() => {
+        if (editingResource) {
+            setType(editingResource.type)
+            setTitle(editingResource.title)
+            setContent(editingResource.content)
+            setDescription(editingResource.description || '')
+            setTags(editingResource.tags?.join(', ') || '')
+        } else {
+            // Reset form when not editing
+            setType('LINK')
+            setTitle('')
+            setContent('')
+            setDescription('')
+            setTags('')
+            setSelectedFile(null)
+        }
+    }, [editingResource])
 
     if (!isOpen) return null
 
@@ -124,8 +142,8 @@ export const ResourceForm: React.FC<ResourceFormProps> = ({
                                 type="button"
                                 onClick={() => setType('PDF')}
                                 className={`p-3 border transition-all flex flex-col items-center gap-2 ${type === 'PDF'
-                                        ? 'border-red-500 bg-red-500/10 text-red-400'
-                                        : 'border-slate-700 bg-slate-800/50 text-slate-400 hover:border-slate-600'
+                                    ? 'border-red-500 bg-red-500/10 text-red-400'
+                                    : 'border-slate-700 bg-slate-800/50 text-slate-400 hover:border-slate-600'
                                     }`}
                             >
                                 <FileText className="w-5 h-5" />
@@ -135,8 +153,8 @@ export const ResourceForm: React.FC<ResourceFormProps> = ({
                                 type="button"
                                 onClick={() => setType('LINK')}
                                 className={`p-3 border transition-all flex flex-col items-center gap-2 ${type === 'LINK'
-                                        ? 'border-blue-500 bg-blue-500/10 text-blue-400'
-                                        : 'border-slate-700 bg-slate-800/50 text-slate-400 hover:border-slate-600'
+                                    ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                                    : 'border-slate-700 bg-slate-800/50 text-slate-400 hover:border-slate-600'
                                     }`}
                             >
                                 <LinkIcon className="w-5 h-5" />
@@ -146,8 +164,8 @@ export const ResourceForm: React.FC<ResourceFormProps> = ({
                                 type="button"
                                 onClick={() => setType('NOTE')}
                                 className={`p-3 border transition-all flex flex-col items-center gap-2 ${type === 'NOTE'
-                                        ? 'border-yellow-500 bg-yellow-500/10 text-yellow-400'
-                                        : 'border-slate-700 bg-slate-800/50 text-slate-400 hover:border-slate-600'
+                                    ? 'border-yellow-500 bg-yellow-500/10 text-yellow-400'
+                                    : 'border-slate-700 bg-slate-800/50 text-slate-400 hover:border-slate-600'
                                     }`}
                             >
                                 <StickyNote className="w-5 h-5" />

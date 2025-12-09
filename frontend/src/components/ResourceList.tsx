@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import { Resource, ResourceType } from '../types'
 import { ResourceCard } from './ResourceCard'
-import { Plus, Search, Grid3x3, List } from 'lucide-react'
+import { Plus, Search } from 'lucide-react'
 
 interface ResourceListProps {
     resources: Resource[]
@@ -33,7 +33,6 @@ export const ResourceList: React.FC<ResourceListProps> = ({
     counts
 }) => {
     const [searchQuery, setSearchQuery] = useState('')
-    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
     // Filter resources by search query
     const filteredResources = resources.filter(resource => {
@@ -53,8 +52,8 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                     <button
                         onClick={() => onFilterChange('ALL')}
                         className={`px-4 py-2 border-b-2 transition-colors font-mono text-xs uppercase tracking-wider whitespace-nowrap ${filterType === 'ALL'
-                                ? 'border-primary-500 text-primary-400'
-                                : 'border-transparent text-slate-500 hover:text-slate-400'
+                            ? 'border-primary-500 text-primary-400'
+                            : 'border-transparent text-slate-500 hover:text-slate-400'
                             }`}
                     >
                         All ({counts.all})
@@ -62,8 +61,8 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                     <button
                         onClick={() => onFilterChange('PDF')}
                         className={`px-4 py-2 border-b-2 transition-colors font-mono text-xs uppercase tracking-wider whitespace-nowrap ${filterType === 'PDF'
-                                ? 'border-red-500 text-red-400'
-                                : 'border-transparent text-slate-500 hover:text-slate-400'
+                            ? 'border-red-500 text-red-400'
+                            : 'border-transparent text-slate-500 hover:text-slate-400'
                             }`}
                     >
                         PDFs ({counts.pdf})
@@ -71,8 +70,8 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                     <button
                         onClick={() => onFilterChange('LINK')}
                         className={`px-4 py-2 border-b-2 transition-colors font-mono text-xs uppercase tracking-wider whitespace-nowrap ${filterType === 'LINK'
-                                ? 'border-blue-500 text-blue-400'
-                                : 'border-transparent text-slate-500 hover:text-slate-400'
+                            ? 'border-blue-500 text-blue-400'
+                            : 'border-transparent text-slate-500 hover:text-slate-400'
                             }`}
                     >
                         Links ({counts.link})
@@ -80,8 +79,8 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                     <button
                         onClick={() => onFilterChange('NOTE')}
                         className={`px-4 py-2 border-b-2 transition-colors font-mono text-xs uppercase tracking-wider whitespace-nowrap ${filterType === 'NOTE'
-                                ? 'border-yellow-500 text-yellow-400'
-                                : 'border-transparent text-slate-500 hover:text-slate-400'
+                            ? 'border-yellow-500 text-yellow-400'
+                            : 'border-transparent text-slate-500 hover:text-slate-400'
                             }`}
                     >
                         Notes ({counts.note})
@@ -102,30 +101,6 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                     />
                 </div>
 
-                {/* View Mode Toggle */}
-                <div className="flex border border-slate-800">
-                    <button
-                        onClick={() => setViewMode('grid')}
-                        className={`p-2 transition-colors ${viewMode === 'grid'
-                                ? 'bg-primary-500 text-slate-900'
-                                : 'bg-slate-900 text-slate-500 hover:text-slate-400'
-                            }`}
-                        title="Grid view"
-                    >
-                        <Grid3x3 className="w-4 h-4" />
-                    </button>
-                    <button
-                        onClick={() => setViewMode('list')}
-                        className={`p-2 transition-colors ${viewMode === 'list'
-                                ? 'bg-primary-500 text-slate-900'
-                                : 'bg-slate-900 text-slate-500 hover:text-slate-400'
-                            }`}
-                        title="List view"
-                    >
-                        <List className="w-4 h-4" />
-                    </button>
-                </div>
-
                 {/* Add Button */}
                 <button
                     onClick={onAddClick}
@@ -136,7 +111,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                 </button>
             </div>
 
-            {/* Resources Grid/List */}
+            {/* Resources List */}
             {loading ? (
                 <div className="flex items-center justify-center py-20">
                     <div className="w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
@@ -154,11 +129,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                     </p>
                 </div>
             ) : (
-                <div className={
-                    viewMode === 'grid'
-                        ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'
-                        : 'space-y-3'
-                }>
+                <div className="space-y-3">
                     {filteredResources.map(resource => (
                         <ResourceCard
                             key={resource.id}

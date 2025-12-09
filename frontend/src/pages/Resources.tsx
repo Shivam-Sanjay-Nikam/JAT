@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { Navbar } from '../components/Navbar'
 import { ResourceList } from '../components/ResourceList'
 import { ResourceForm } from '../components/ResourceForm'
+import { NoteViewer } from '../components/NoteViewer'
 import { useResources } from '../hooks/useResources'
 import { Resource } from '../types'
 import { BookOpen, FileText, Link as LinkIcon, StickyNote } from 'lucide-react'
@@ -23,6 +24,7 @@ export const Resources: React.FC = () => {
 
     const [isFormOpen, setIsFormOpen] = useState(false)
     const [editingResource, setEditingResource] = useState<Resource | null>(null)
+    const [viewingNote, setViewingNote] = useState<Resource | null>(null)
 
     const handleAddClick = () => {
         setEditingResource(null)
@@ -51,9 +53,7 @@ export const Resources: React.FC = () => {
         } else if (resource.type === 'LINK') {
             window.open(resource.content, '_blank')
         } else if (resource.type === 'NOTE') {
-            // For notes, we could show a modal with the full content
-            // For now, just log it (you can enhance this later)
-            alert(resource.content)
+            setViewingNote(resource)
         }
     }
 
@@ -141,6 +141,13 @@ export const Resources: React.FC = () => {
                 onSubmit={handleFormSubmit}
                 onUploadPDF={uploadPDF}
                 editingResource={editingResource}
+            />
+
+            {/* Note Viewer Modal */}
+            <NoteViewer
+                isOpen={!!viewingNote}
+                note={viewingNote}
+                onClose={() => setViewingNote(null)}
             />
         </div>
     )
