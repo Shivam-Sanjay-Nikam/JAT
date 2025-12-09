@@ -1,6 +1,6 @@
 import React from 'react'
 import { Navbar } from '../components/Navbar'
-import { LayoutDashboard, Users, Bell, Command, Terminal, Shield } from 'lucide-react'
+import { LayoutDashboard, Users, Bell, Command, Terminal, Shield, CheckSquare } from 'lucide-react'
 
 export const Help: React.FC = () => {
     return (
@@ -127,6 +127,79 @@ export const Help: React.FC = () => {
                                 <h3 className="text-lg font-bold text-white mb-2">Incoming Signals</h3>
                                 <p className="text-slate-400 text-sm">
                                     Friend requests appear as "Incoming Signals". You can Accept to establish a secure link or Reject to block the connection.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div className="h-px bg-gradient-to-r from-transparent via-slate-800 to-transparent"></div>
+
+                {/* Section: Task Protocol */}
+                <section className="space-y-6">
+                    <div className="flex items-center gap-4 mb-6">
+                        <div className="bg-primary-500/10 p-3 rounded-lg border border-primary-500/30">
+                            <CheckSquare className="w-8 h-8 text-primary-400" />
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-bold text-white font-[Orbitron] uppercase tracking-wider">Task_Protocol</h2>
+                            <p className="text-slate-500 font-mono text-sm">DAILY_PRODUCTIVITY_SYSTEM</p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="glass-panel p-6 rounded-xl border-l-4 border-l-primary-500">
+                            <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                                <Command className="w-4 h-4 text-primary-500" />
+                                Daily Task Management
+                            </h3>
+                            <p className="text-slate-400 text-sm leading-relaxed">
+                                Track your daily tasks with a clean interface. Add tasks using the <strong className="text-white">ADD_NEW_TASK</strong> input.
+                                Check off completed items to track your progress. The system automatically calculates your completion percentage.
+                            </p>
+                        </div>
+                        <div className="glass-panel p-6 rounded-xl border-l-4 border-l-yellow-500">
+                            <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                                <Terminal className="w-4 h-4 text-yellow-500" />
+                                Date Navigation
+                            </h3>
+                            <p className="text-slate-400 text-sm leading-relaxed">
+                                Use the <strong className="text-white">◀ ▶</strong> arrows to navigate between days. View past tasks or plan future ones.
+                                Click <strong className="text-white">"← Back to Today"</strong> to return to the current day instantly.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-8 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-3xl"></div>
+
+                        <div className="space-y-6 relative z-10">
+                            <div>
+                                <h3 className="text-lg font-bold text-white mb-2">Streak Calendar 🔥</h3>
+                                <p className="text-slate-400 text-sm">
+                                    The monthly calendar visualizes your productivity streak. Days where you complete <strong className="text-white">100% of tasks</strong> earn a
+                                    <span className="text-primary-400"> 🔥 fire emoji</span>. Navigate months using the arrow buttons to review your history.
+                                </p>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white mb-2">Streak Stats</h3>
+                                <p className="text-slate-400 text-sm">
+                                    Track your <strong className="text-white">Current Streak</strong> (consecutive days with 100% completion) and
+                                    <strong className="text-white"> Best Streak</strong> (your all-time record). Maintain consistency to build momentum!
+                                </p>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white mb-2">Friend Notifications</h3>
+                                <p className="text-slate-400 text-sm">
+                                    When you complete all daily tasks, your friends receive a notification celebrating your achievement.
+                                    Stay motivated by sharing your progress with your network!
+                                </p>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white mb-2">Automatic Midnight Refresh</h3>
+                                <p className="text-slate-400 text-sm">
+                                    The system automatically refreshes at midnight, giving you a fresh start each day.
+                                    Your previous tasks are safely archived and accessible via date navigation.
                                 </p>
                             </div>
                         </div>
