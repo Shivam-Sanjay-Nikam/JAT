@@ -115,27 +115,54 @@ export const StreakCalendar: React.FC = () => {
                     </div>
                 ) : (
                     <div className="overflow-x-auto pb-2">
-                        <div className="inline-flex gap-1">
-                            {weeks.map((week, weekIdx) => (
-                                <div key={weekIdx} className="flex flex-col gap-1">
-                                    {week.map((day) => (
-                                        <div
-                                            key={day.date}
-                                            className={`w-3 h-3 border transition-all cursor-pointer hover:scale-125 relative ${getCellColor(day.completion)} ${day.isToday ? 'ring-1 ring-primary-400 ring-offset-1 ring-offset-slate-950' : ''
-                                                }`}
-                                            onMouseEnter={() => setHoveredDate(day.date)}
-                                            onMouseLeave={() => setHoveredDate(null)}
-                                            title={day.date}
-                                        >
-                                            {day.completion?.completion_percentage === 100 && (
-                                                <div className="absolute inset-0 flex items-center justify-center text-[6px]">
-                                                    🔥
-                                                </div>
+                        <div className="inline-block">
+                            {/* Month Labels */}
+                            <div className="flex gap-1 mb-2">
+                                {weeks.map((week, weekIdx) => {
+                                    // Get the first day of this week to determine the month
+                                    const firstDay = week[0]
+                                    const date = new Date(firstDay.date)
+                                    const monthName = date.toLocaleDateString('en-US', { month: 'short' })
+
+                                    // Only show month label if it's the first week of the month or first week overall
+                                    const showLabel = weekIdx === 0 ||
+                                        (weekIdx > 0 && new Date(weeks[weekIdx - 1][0].date).getMonth() !== date.getMonth())
+
+                                    return (
+                                        <div key={`month-${weekIdx}`} className="w-3 flex items-center justify-center">
+                                            {showLabel && (
+                                                <span className="text-[8px] font-mono text-slate-500 uppercase tracking-wider whitespace-nowrap -rotate-0">
+                                                    {monthName}
+                                                </span>
                                             )}
                                         </div>
-                                    ))}
-                                </div>
-                            ))}
+                                    )
+                                })}
+                            </div>
+
+                            {/* Calendar Grid */}
+                            <div className="inline-flex gap-1">
+                                {weeks.map((week, weekIdx) => (
+                                    <div key={weekIdx} className="flex flex-col gap-1">
+                                        {week.map((day) => (
+                                            <div
+                                                key={day.date}
+                                                className={`w-3 h-3 border transition-all cursor-pointer hover:scale-125 relative ${getCellColor(day.completion)} ${day.isToday ? 'ring-1 ring-primary-400 ring-offset-1 ring-offset-slate-950' : ''
+                                                    }`}
+                                                onMouseEnter={() => setHoveredDate(day.date)}
+                                                onMouseLeave={() => setHoveredDate(null)}
+                                                title={day.date}
+                                            >
+                                                {day.completion?.completion_percentage === 100 && (
+                                                    <div className="absolute inset-0 flex items-center justify-center text-[6px]">
+                                                        🔥
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 )}
