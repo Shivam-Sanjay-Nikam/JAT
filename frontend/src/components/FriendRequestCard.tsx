@@ -35,6 +35,11 @@ export const FriendRequestCard: React.FC<FriendRequestCardProps> = ({ request, o
                 // The sender_email is the friend's email (person who sent us the request)
                 const friendEmail = requestData.sender_email || ''
 
+                console.log('Creating friendships:', {
+                    direction1: `${user.email} -> ${friendEmail}`,
+                    direction2: `${friendEmail} -> ${user.email}`
+                })
+
                 // Insert friendship: user (me) -> friend (them)
                 const { error: friendError } = await supabase
                     .from('friends')
@@ -44,7 +49,10 @@ export const FriendRequestCard: React.FC<FriendRequestCardProps> = ({ request, o
                         friend_email: friendEmail // Store their email
                     })
 
-                if (friendError) throw friendError
+                if (friendError) {
+                    console.error('Failed to create friendship (me -> them):', friendError)
+                    throw friendError
+                }
 
                 // Insert reverse friendship: friend (them) -> user (me)
                 const { error: reverseError } = await supabase
@@ -55,10 +63,18 @@ export const FriendRequestCard: React.FC<FriendRequestCardProps> = ({ request, o
                         friend_email: user.email || '' // Store our email for them
                     })
 
-                // Ignore duplicate key errors (23505) - friendship might already exist
-                if (reverseError && reverseError.code !== '23505') {
-                    console.warn('Reverse friendship insert failed:', reverseError)
+                // Don't ignore errors - we need both directions!
+                if (reverseError) {
+                    // Only ignore duplicate key errors
+                    if (reverseError.code === '23505') {
+                        console.log('Reverse friendship already exists (OK)')
+                    } else {
+                        console.error('Failed to create reverse friendship (them -> me):', reverseError)
+                        // Don't throw - at least one direction exists
+                    }
                 }
+
+                console.log('Friendships created successfully')
             }
             // Our 'friends' schema (user_id, friend_id) usually implies direction unless query handles OR.
             // Let's just insert one row and ensure query looks for both sides.
