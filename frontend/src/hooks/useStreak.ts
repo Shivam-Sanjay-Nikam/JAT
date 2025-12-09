@@ -121,6 +121,16 @@ export const useStreak = () => {
         }
 
         setupSubscription()
+
+        // Listen for manual refresh events from todo updates
+        const handleRefresh = () => {
+            fetchCompletionHistory()
+        }
+        window.addEventListener('refresh-calendar', handleRefresh)
+
+        return () => {
+            window.removeEventListener('refresh-calendar', handleRefresh)
+        }
     }, [])
 
     return {

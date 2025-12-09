@@ -121,6 +121,12 @@ export const useTodos = () => {
             console.error('Error checking daily completion:', error)
         } else if (data) {
             console.log('Daily completion updated:', data)
+
+            // Small delay to ensure database is updated before calendar refreshes
+            await new Promise(resolve => setTimeout(resolve, 500))
+
+            // Trigger a manual refresh of the calendar by emitting a custom event
+            window.dispatchEvent(new CustomEvent('refresh-calendar'))
         }
     }
 
