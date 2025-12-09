@@ -20,27 +20,24 @@ export const useFriends = () => {
         if (!user) return
         setLoading(true)
 
-        // Query friends where user_id = me OR friend_id = me
+        // Query friends where user_id = me (only get our friendship records, not reverse ones)
         const { data, error } = await supabase
             .from('friends')
             .select('*')
-            .or(`user_id.eq.${user.id},friend_id.eq.${user.id}`)
+            .eq('user_id', user.id)
             .order('created_at', { ascending: false })
 
         if (error) {
             console.error('Error fetching friends:', error)
         } else {
-            // For each friend, determine which ID is the friend (not me) and use stored friend_email
+            // For each friend, use the stored friend_email
             const friendsWithEmails = (data || []).map((friend) => {
-                // Determine which ID is the friend (not me)
-                const friendUserId = friend.user_id === user.id ? friend.friend_id : friend.user_id
-
                 // Use the friend_email that's already stored in the database
-                const friendEmail = (friend as any).friend_email || `Friend ${friendUserId.slice(0, 8)}...`
+                const friendEmail = (friend as any).friend_email || `Friend ${friend.friend_id.slice(0, 8)}...`
 
                 return {
                     ...friend,
-                    friend_user_id: friendUserId,
+                    friend_user_id: friend.friend_id,
                     friend_email: friendEmail
                 }
             })
