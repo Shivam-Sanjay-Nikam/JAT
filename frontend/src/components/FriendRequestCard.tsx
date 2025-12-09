@@ -23,35 +23,34 @@ export const FriendRequestCard: React.FC<FriendRequestCardProps> = ({ request, o
                 const { data: { user } } = await supabase.auth.getUser()
                 if (!user) throw new Error('User not authenticated')
 
-                // Get sender's email from the request
-                // Check if sender_email is stored (new feature) or use receiver_email if we sent the request
+                // Get the full request data including sender_email
                 const { data: requestData } = await supabase
                     .from('friend_requests')
-                    .select('sender_email, receiver_email')
+                    .select('sender_id, sender_email, receiver_email')
                     .eq('id', request.id)
                     .single()
 
-                // Use sender_email if available (when they sent us request)
-                // Otherwise, if we sent them request, receiver_email is their email
-                const senderEmail = (requestData as any)?.sender_email ||
-                    (request.receiver_email && request.receiver_email !== user.email ? request.receiver_email : '')
+                if (!requestData) throw new Error('Request not found')
 
-                // Insert into friends table: (me, sender) with email
+                // The sender_email is the friend's email (person who sent us the request)
+                const friendEmail = requestData.sender_email || ''
+
+                // Insert friendship: user (me) -> friend (them)
                 const { error: friendError } = await supabase
                     .from('friends')
                     .insert({
                         user_id: user.id,
-                        friend_id: request.sender_id,
-                        friend_email: senderEmail // Will be empty/incorrect if they sent us request
+                        friend_id: requestData.sender_id,
+                        friend_email: friendEmail // Store their email
                     })
 
                 if (friendError) throw friendError
 
-                // Also insert reverse friendship (bidirectional) with email
+                // Insert reverse friendship: friend (them) -> user (me)
                 const { error: reverseError } = await supabase
                     .from('friends')
                     .insert({
-                        user_id: request.sender_id,
+                        user_id: requestData.sender_id,
                         friend_id: user.id,
                         friend_email: user.email || '' // Store our email for them
                     })
@@ -60,11 +59,9 @@ export const FriendRequestCard: React.FC<FriendRequestCardProps> = ({ request, o
                 if (reverseError && reverseError.code !== '23505') {
                     console.warn('Reverse friendship insert failed:', reverseError)
                 }
-
-                // Insert reverse friendship if needed by schema (we used UNIQUE(user_id, friend_id), so maybe bidirectional logic is needed or just one row implies both?)
-                // Our 'friends' schema (user_id, friend_id) usually implies direction unless query handles OR.
-                // Let's just insert one row and ensure query looks for both sides.
             }
+            // Our 'friends' schema (user_id, friend_id) usually implies direction unless query handles OR.
+            // Let's just insert one row and ensure query looks for both sides.
 
             const { error } = await supabase
                 .from('friend_requests')
