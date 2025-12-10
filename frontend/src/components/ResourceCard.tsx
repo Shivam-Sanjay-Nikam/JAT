@@ -49,11 +49,16 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({ resource, onEdit, on
                     </span>
                 </div>
 
-                {/* Title */}
+                {/* Title and Description */}
                 <div className="flex-1 min-w-0">
                     <h3 className="text-white font-semibold truncate">
                         {resource.title}
                     </h3>
+                    {resource.description && (
+                        <p className="text-slate-500 text-xs mt-0.5 truncate">
+                            {resource.description}
+                        </p>
+                    )}
                 </div>
 
                 {/* Tags */}
