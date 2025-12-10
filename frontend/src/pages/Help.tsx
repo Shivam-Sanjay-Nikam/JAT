@@ -1,6 +1,6 @@
 import React from 'react'
 import { Navbar } from '../components/Navbar'
-import { LayoutDashboard, Users, Bell, Command, Terminal, Shield, CheckSquare } from 'lucide-react'
+import { LayoutDashboard, Users, Bell, Command, Terminal, Shield, CheckSquare, BookOpen, FileText, Link as LinkIcon, StickyNote } from 'lucide-react'
 
 export const Help: React.FC = () => {
     return (
@@ -200,6 +200,84 @@ export const Help: React.FC = () => {
                                 <p className="text-slate-400 text-sm">
                                     The system automatically refreshes at midnight, giving you a fresh start each day.
                                     Your previous tasks are safely archived and accessible via date navigation.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div className="h-px bg-gradient-to-r from-transparent via-slate-800 to-transparent"></div>
+
+                {/* Section: Resource Vault */}
+                <section className="space-y-6">
+                    <div className="flex items-center gap-4 mb-6">
+                        <div className="bg-primary-500/10 p-3 rounded-lg border border-primary-500/30">
+                            <BookOpen className="w-8 h-8 text-primary-400" />
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-bold text-white font-[Orbitron] uppercase tracking-wider">Resource_Vault</h2>
+                            <p className="text-slate-500 font-mono text-sm">KNOWLEDGE_STORAGE_SYSTEM</p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="glass-panel p-6 rounded-xl border-l-4 border-l-red-500">
+                            <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                                <FileText className="w-4 h-4 text-red-400" />
+                                PDF Documents
+                            </h3>
+                            <p className="text-slate-400 text-sm leading-relaxed">
+                                Upload and store PDF files for study materials, documentation, or reference guides.
+                                Files are securely stored and can be downloaded anytime. Max size: 10MB per file.
+                            </p>
+                        </div>
+                        <div className="glass-panel p-6 rounded-xl border-l-4 border-l-blue-500">
+                            <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                                <LinkIcon className="w-4 h-4 text-blue-400" />
+                                Web Links
+                            </h3>
+                            <p className="text-slate-400 text-sm leading-relaxed">
+                                Save important URLs to articles, tutorials, documentation, or any web resources.
+                                Click the external link icon to open in a new tab instantly.
+                            </p>
+                        </div>
+                        <div className="glass-panel p-6 rounded-xl border-l-4 border-l-yellow-500">
+                            <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                                <StickyNote className="w-4 h-4 text-yellow-400" />
+                                Text Notes
+                            </h3>
+                            <p className="text-slate-400 text-sm leading-relaxed">
+                                Create quick notes, code snippets, or markdown documentation.
+                                View notes in a clean, readable modal with full content display.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-8 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-3xl"></div>
+
+                        <div className="space-y-6 relative z-10">
+                            <div>
+                                <h3 className="text-lg font-bold text-white mb-2">Organization & Search</h3>
+                                <p className="text-slate-400 text-sm">
+                                    Tag your resources with keywords (e.g., "javascript", "interview-prep", "algorithms") for easy categorization.
+                                    Use the search bar to quickly find resources by title, description, or tags.
+                                </p>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white mb-2">Filter by Type</h3>
+                                <p className="text-slate-400 text-sm">
+                                    Click the filter tabs (<strong className="text-white">All</strong>, <strong className="text-red-400">PDFs</strong>,
+                                    <strong className="text-blue-400"> Links</strong>, <strong className="text-yellow-400">Notes</strong>)
+                                    to view specific resource types. Stats cards show your total count for each category.
+                                </p>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white mb-2">Managing Resources</h3>
+                                <p className="text-slate-400 text-sm">
+                                    Each resource card displays action buttons: <strong className="text-white">View/Download</strong> (eye/download icon),
+                                    <strong className="text-white"> Edit</strong> (pencil icon), and <strong className="text-white">Delete</strong> (trash icon).
+                                    Editing pre-fills all existing values for easy updates.
                                 </p>
                             </div>
                         </div>
