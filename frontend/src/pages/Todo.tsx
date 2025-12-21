@@ -8,7 +8,8 @@ import { useStreak } from '../hooks/useStreak'
 import { Calendar, CheckSquare } from 'lucide-react'
 
 export const Todo: React.FC = () => {
-    const { completionPercentage, completedCount, totalCount } = useTodos()
+    const [selectedDate, setSelectedDate] = React.useState(new Date())
+    const { completionPercentage, completedCount, totalCount } = useTodos(selectedDate, setSelectedDate)
     const { currentStreak } = useStreak()
 
     // Get today's date formatted
@@ -50,12 +51,18 @@ export const Todo: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Left: Todo List (2/3 width on large screens) */}
                     <div className="lg:col-span-2">
-                        <TodoList />
+                        <TodoList
+                            date={selectedDate}
+                            onDateChange={setSelectedDate}
+                        />
                     </div>
 
                     {/* Right: Streak Calendar (1/3 width on large screens) */}
                     <div className="lg:col-span-1">
-                        <StreakCalendar />
+                        <StreakCalendar
+                            selectedDate={selectedDate}
+                            onDateSelect={setSelectedDate}
+                        />
                     </div>
                 </div>
             </main>

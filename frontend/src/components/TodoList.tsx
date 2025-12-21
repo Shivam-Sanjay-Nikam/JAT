@@ -4,7 +4,12 @@ import { useTodos } from '../hooks/useTodos'
 import { TodoItem } from './TodoItem'
 import { Plus, ListTodo, ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
 
-export const TodoList: React.FC = () => {
+interface TodoListProps {
+    date?: Date
+    onDateChange?: (date: Date) => void
+}
+
+export const TodoList: React.FC<TodoListProps> = ({ date, onDateChange }) => {
     const {
         todos,
         loading,
@@ -19,7 +24,7 @@ export const TodoList: React.FC = () => {
         goToPreviousDay,
         goToNextDay,
         goToToday
-    } = useTodos()
+    } = useTodos(date, onDateChange)
     const [newTodoTitle, setNewTodoTitle] = useState('')
     const [isAdding, setIsAdding] = useState(false)
 

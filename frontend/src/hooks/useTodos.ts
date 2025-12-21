@@ -3,10 +3,17 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { Todo } from '../types'
 
-export const useTodos = () => {
+export const useTodos = (
+    externalDate?: Date,
+    setExternalDate?: (date: Date) => void
+) => {
+    const [localDate, setLocalDate] = useState(new Date())
     const [todos, setTodos] = useState<Todo[]>([])
     const [loading, setLoading] = useState(true)
-    const [selectedDate, setSelectedDate] = useState(new Date())
+
+    // Use external date if provided, otherwise use local state
+    const selectedDate = externalDate || localDate
+    const setSelectedDate = setExternalDate || setLocalDate
 
     // Get date in YYYY-MM-DD format (local timezone)
     const getDateString = (date: Date) => {

@@ -3,7 +3,12 @@ import React, { useState } from 'react'
 import { useStreak } from '../hooks/useStreak'
 import { Flame, Trophy, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react'
 
-export const StreakCalendar: React.FC = () => {
+interface StreakCalendarProps {
+    selectedDate?: Date
+    onDateSelect?: (date: Date) => void
+}
+
+export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, onDateSelect }) => {
     const { currentStreak, longestStreak, completionHistory, loading } = useStreak()
     const [hoveredDate, setHoveredDate] = useState<string | null>(null)
     const [currentMonth, setCurrentMonth] = useState(new Date())
@@ -189,16 +194,22 @@ export const StreakCalendar: React.FC = () => {
                                         <div
                                             key={day.date}
                                             className={`w-10 h-10 border transition-all cursor-pointer hover:scale-105 relative flex items-center justify-center ${getCellColor(day.completion)} ${day.isToday ? 'ring-2 ring-primary-400 ring-offset-1 ring-offset-slate-950' : ''
-                                                }`}
+                                                } ${selectedDate && day.date === selectedDate.toISOString().split('T')[0] ? 'ring-2 ring-white ring-offset-1 ring-offset-slate-950 shadow-[0_0_10px_rgba(255,255,255,0.3)]' : ''}`}
+                                            onClick={() => onDateSelect?.(new Date(day.date))}
                                             onMouseEnter={() => setHoveredDate(day.date)}
                                             onMouseLeave={() => setHoveredDate(null)}
                                             title={day.date}
                                         >
-                                            <span className="text-[10px] font-mono text-slate-300 z-10">
+                                            <span className="text-[10px] font-mono text-slate-300 z-10 leading-none mb-0.5">
                                                 {new Date(day.date).getDate()}
                                             </span>
+                                            {day.completion && day.completion.total_tasks > 0 && (
+                                                <span className="text-[7px] font-mono text-slate-400 z-10 leading-none">
+                                                    {day.completion.completed_tasks}/{day.completion.total_tasks}
+                                                </span>
+                                            )}
                                             {day.completion?.completion_percentage === 100 && (
-                                                <div className="absolute top-0 right-0 text-[10px] leading-none">
+                                                <div className="absolute top-0 right-0 text-[8px] leading-none p-0.5">
                                                     🔥
                                                 </div>
                                             )}
