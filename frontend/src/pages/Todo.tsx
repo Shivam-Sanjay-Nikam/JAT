@@ -9,7 +9,7 @@ import { Calendar, CheckSquare } from 'lucide-react'
 
 export const Todo: React.FC = () => {
     const [selectedDate, setSelectedDate] = React.useState(new Date())
-    const { completionPercentage, completedCount, totalCount } = useTodos(selectedDate, setSelectedDate)
+    const { completionPercentage, completedCount, totalCount, allTimeStats } = useTodos(selectedDate, setSelectedDate)
     const { currentStreak } = useStreak()
 
     // Get today's date formatted
@@ -37,6 +37,9 @@ export const Todo: React.FC = () => {
                             &gt; {today.toUpperCase()}
                         </p>
                         <div className="flex items-center gap-4 text-xs font-mono">
+                            <span className="text-slate-500">
+                                ALL TIME: <span className="text-primary-400">{allTimeStats.completed}/{allTimeStats.total}</span>
+                            </span>
                             <span className="text-slate-500">
                                 PROGRESS: <span className="text-primary-400">{completionPercentage}%</span>
                             </span>

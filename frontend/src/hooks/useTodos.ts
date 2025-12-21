@@ -10,6 +10,7 @@ export const useTodos = (
     const [localDate, setLocalDate] = useState(new Date())
     const [todos, setTodos] = useState<Todo[]>([])
     const [loading, setLoading] = useState(true)
+    const [allTimeStats, setAllTimeStats] = useState({ total: 0, completed: 0 })
 
     // Use external date if provided, otherwise use local state
     const selectedDate = externalDate || localDate
@@ -57,6 +58,29 @@ export const useTodos = (
         setLoading(false)
     }
 
+    const fetchAllTimeStats = async () => {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return
+
+        const { count: totalCount, error: totalError } = await supabase
+            .from('todos')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', user.id)
+
+        const { count: completedCount, error: completedError } = await supabase
+            .from('todos')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', user.id)
+            .eq('is_completed', true)
+
+        if (!totalError && !completedError) {
+            setAllTimeStats({
+                total: totalCount || 0,
+                completed: completedCount || 0
+            })
+        }
+    }
+
     const addTodo = async (title: string) => {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return
@@ -78,8 +102,10 @@ export const useTodos = (
             console.error('Error adding todo:', error)
         } else if (data) {
             setTodos(prev => [...prev, data])
+            setTodos(prev => [...prev, data])
             // Check completion status after adding
             await checkDailyCompletion(dateStr)
+            await fetchAllTimeStats()
         }
     }
 
@@ -100,6 +126,7 @@ export const useTodos = (
             setTodos(prev => prev.map(t => t.id === id ? data : t))
             // Check completion status after toggling
             await checkDailyCompletion(getDateString(selectedDate))
+            await fetchAllTimeStats()
         }
     }
 
@@ -115,6 +142,7 @@ export const useTodos = (
             setTodos(prev => prev.filter(t => t.id !== id))
             // Check completion status after deleting
             await checkDailyCompletion(getDateString(selectedDate))
+            await fetchAllTimeStats()
         }
     }
 
@@ -164,6 +192,7 @@ export const useTodos = (
 
     useEffect(() => {
         fetchTodosForDate(selectedDate)
+        fetchAllTimeStats()
 
         // Subscribe to real-time changes
         const setupSubscription = async () => {
@@ -243,6 +272,7 @@ export const useTodos = (
         isToday,
         goToPreviousDay,
         goToNextDay,
-        goToToday
+        goToToday,
+        allTimeStats
     }
 }
