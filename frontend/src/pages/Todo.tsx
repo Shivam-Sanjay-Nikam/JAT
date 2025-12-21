@@ -38,9 +38,6 @@ export const Todo: React.FC = () => {
                         </p>
                         <div className="flex items-center gap-4 text-xs font-mono">
                             <span className="text-slate-500">
-                                ALL TIME: <span className="text-primary-400">{allTimeStats.completed}/{allTimeStats.total}</span>
-                            </span>
-                            <span className="text-slate-500">
                                 PROGRESS: <span className="text-primary-400">{completionPercentage}%</span>
                             </span>
                             <span className="text-slate-500">
@@ -65,6 +62,7 @@ export const Todo: React.FC = () => {
                         <StreakCalendar
                             selectedDate={selectedDate}
                             onDateSelect={setSelectedDate}
+                            allTimeStats={allTimeStats}
                         />
                     </div>
                 </div>

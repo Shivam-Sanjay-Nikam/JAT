@@ -1,14 +1,15 @@
 
 import React, { useState } from 'react'
 import { useStreak } from '../hooks/useStreak'
-import { Flame, Trophy, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Flame, Trophy, Calendar as CalendarIcon, ChevronLeft, ChevronRight, CheckSquare } from 'lucide-react'
 
 interface StreakCalendarProps {
     selectedDate?: Date
     onDateSelect?: (date: Date) => void
+    allTimeStats?: { total: number; completed: number }
 }
 
-export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, onDateSelect }) => {
+export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, onDateSelect, allTimeStats }) => {
     const { currentStreak, longestStreak, completionHistory, loading } = useStreak()
     const [hoveredDate, setHoveredDate] = useState<string | null>(null)
     const [currentMonth, setCurrentMonth] = useState(new Date())
@@ -111,19 +112,19 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                     </div>
                 </div>
 
-                {/* Longest Streak */}
+                {/* All Time Stats */}
                 <div className="bg-slate-900/50 border border-slate-700 p-4 relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="relative z-10">
                         <div className="flex items-center gap-2 mb-2">
-                            <Trophy className="w-4 h-4 text-yellow-500" />
-                            <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">Best Streak</span>
+                            <CheckSquare className="w-4 h-4 text-green-500" />
+                            <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">All Time Tasks</span>
                         </div>
                         <div className="text-3xl font-bold text-white font-[Orbitron]">
-                            {loading ? '...' : longestStreak}
+                            {allTimeStats?.completed || 0}
                         </div>
                         <div className="text-xs font-mono text-slate-400 mt-1">
-                            {longestStreak === 1 ? 'DAY' : 'DAYS'}
+                            out of {allTimeStats?.total || 0}
                         </div>
                     </div>
                 </div>
