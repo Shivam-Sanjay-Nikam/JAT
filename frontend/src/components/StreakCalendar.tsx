@@ -194,26 +194,26 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                                     ) : (
                                         <div
                                             key={day.date}
-                                            className={`w-10 h-10 border transition-all cursor-pointer hover:scale-105 relative flex flex-col items-center justify-center gap-0.5 ${getCellColor(day.completion)} ${day.isToday ? 'ring-2 ring-primary-400 ring-offset-1 ring-offset-slate-950' : ''
+                                            className={`w-14 h-14 border transition-all cursor-pointer hover:scale-105 relative flex flex-col items-center justify-center gap-1 ${getCellColor(day.completion)} ${day.isToday ? 'ring-2 ring-primary-400 ring-offset-1 ring-offset-slate-950' : ''
                                                 } ${selectedDate && day.date === selectedDate.toISOString().split('T')[0] ? 'ring-2 ring-white ring-offset-1 ring-offset-slate-950 shadow-[0_0_10px_rgba(255,255,255,0.3)]' : ''}`}
                                             onClick={() => onDateSelect?.(new Date(day.date))}
                                             onMouseEnter={() => setHoveredDate(day.date)}
                                             onMouseLeave={() => setHoveredDate(null)}
                                             title={day.date}
                                         >
-                                            <span className="text-[10px] font-bold text-slate-200 z-10 leading-none">
+                                            <span className="text-xs font-bold text-slate-200 z-10 leading-none">
                                                 {new Date(day.date).getDate()}
                                             </span>
                                             {day.completion && day.completion.total_tasks > 0 && (
-                                                <div className="flex items-center gap-[1px] text-[7px] font-mono z-10 leading-none bg-slate-950/40 px-1 py-px rounded-full backdrop-blur-[1px]">
+                                                <div className="flex items-center gap-[1px] text-[8px] font-mono z-10 leading-none bg-slate-950/40 px-1.5 py-0.5 rounded-full backdrop-blur-[1px]">
                                                     <span className="text-primary-400 font-bold">{day.completion.completed_tasks}</span>
                                                     <span className="text-slate-500">/</span>
                                                     <span className="text-slate-400">{day.completion.total_tasks}</span>
                                                 </div>
                                             )}
                                             {day.completion?.completion_percentage === 100 && (
-                                                <div className="absolute -top-1 -right-1 z-20 pointer-events-none filter drop-shadow-md">
-                                                    <span className="text-[10px]">🔥</span>
+                                                <div className="absolute -top-1.5 -right-1.5 z-20 pointer-events-none filter drop-shadow-md">
+                                                    <span className="text-sm">🔥</span>
                                                 </div>
                                             )}
                                         </div>
