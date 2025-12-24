@@ -86,6 +86,16 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
 
     const calendarDays = generateCalendarDays()
 
+    // Helper to safely check dates
+    const isSameDate = (d1: Date, dateStr: string) => {
+        try {
+            if (!(d1 instanceof Date) || isNaN(d1.getTime())) return false
+            return d1.toISOString().split('T')[0] === dateStr
+        } catch (e) {
+            return false
+        }
+    }
+
     // Group days by week for grid layout (7 days per week)
     const weeks: typeof calendarDays[] = []
     for (let i = 0; i < calendarDays.length; i += 7) {
@@ -273,8 +283,8 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                                     ) : (
                                         <div
                                             key={day.date}
-                                            className={`w - 12 h - 12 border transition - all cursor - pointer hover: scale - 105 relative flex flex - col items - center justify - center gap - 0.5 ${selectedDate && day.date === selectedDate.toISOString().split('T')[0] ? 'bg-primary-500/20 border-primary-500 shadow-[0_0_15px_rgba(var(--primary-500),0.3)]' : getCellColor(day)
-                                                } ${day.isToday ? 'ring-1 ring-primary-400 ring-offset-1 ring-offset-slate-950' : ''} `}
+                                            className={`w-12 h-12 border transition-all cursor-pointer hover:scale-105 relative flex flex-col items-center justify-center gap-0.5 ${selectedDate && isSameDate(selectedDate, day.date) ? 'bg-primary-500/20 border-primary-500 shadow-[0_0_15px_rgba(var(--primary-500),0.3)]' : getCellColor(day)
+                                                } ${day.isToday ? 'ring-1 ring-primary-400 ring-offset-1 ring-offset-slate-950' : ''}`}
                                             onClick={() => onDateSelect?.(new Date(day.date))}
                                             onMouseEnter={() => setHoveredDate(day.date)}
                                             onMouseLeave={() => setHoveredDate(null)}
