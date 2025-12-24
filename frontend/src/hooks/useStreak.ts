@@ -136,7 +136,13 @@ export const useStreak = () => {
             }
 
             if (consistency) {
-                setConsistencyHistory(consistency)
+                // Ensure counts are numbers (Postgres BIGINT can return as strings)
+                const formattedConsistency = consistency.map((c: any) => ({
+                    stat_date: c.stat_date,
+                    total_due: Number(c.total_due || 0),
+                    completed_on_time: Number(c.completed_on_time || 0)
+                }))
+                setConsistencyHistory(formattedConsistency)
             }
         } catch (error) {
             console.error('Error fetching streak data:', error)

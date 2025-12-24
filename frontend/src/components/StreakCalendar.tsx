@@ -192,8 +192,8 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                             <button
                                 onClick={() => setViewMode('scheduled')}
                                 className={`px - 2 py - 1 text - [9px] font - mono tracking - wider transition - all rounded ${viewMode === 'scheduled'
-                                        ? 'bg-primary-500/20 text-primary-400 font-bold shadow-sm'
-                                        : 'text-slate-500 hover:text-slate-300'
+                                    ? 'bg-primary-500/20 text-primary-400 font-bold shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-300'
                                     } `}
                             >
                                 SCHEDULED
@@ -201,8 +201,8 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                             <button
                                 onClick={() => setViewMode('productivity')}
                                 className={`px - 2 py - 1 text - [9px] font - mono tracking - wider transition - all rounded ${viewMode === 'productivity'
-                                        ? 'bg-green-500/20 text-green-400 font-bold shadow-sm'
-                                        : 'text-slate-500 hover:text-slate-300'
+                                    ? 'bg-green-500/20 text-green-400 font-bold shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-300'
                                     } `}
                             >
                                 COMPLETED
@@ -210,8 +210,8 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                             <button
                                 onClick={() => setViewMode('consistency')}
                                 className={`px - 2 py - 1 text - [9px] font - mono tracking - wider transition - all rounded ${viewMode === 'consistency'
-                                        ? 'bg-purple-500/20 text-purple-400 font-bold shadow-sm'
-                                        : 'text-slate-500 hover:text-slate-300'
+                                    ? 'bg-purple-500/20 text-purple-400 font-bold shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-300'
                                     } `}
                             >
                                 CONSISTENCY
@@ -313,7 +313,12 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                                                     {/* Consistency View */}
                                                     {day.consistencyStats && day.consistencyStats.total_due > 0 && (
                                                         <div className="flex items-center gap-[1px] text-[7px] font-mono z-10 leading-none bg-slate-950/40 px-1.5 py-px rounded-full backdrop-blur-[1px]">
-                                                            <span className="text-purple-400 font-bold">{Math.round((day.consistencyStats.completed_on_time / day.consistencyStats.total_due) * 100)}%</span>
+                                                            <span className="text-purple-400 font-bold">
+                                                                {(() => {
+                                                                    const val = (day.consistencyStats.completed_on_time / day.consistencyStats.total_due) * 100
+                                                                    return isNaN(val) ? 0 : Math.round(val)
+                                                                })()}%
+                                                            </span>
                                                         </div>
                                                     )}
                                                 </>
