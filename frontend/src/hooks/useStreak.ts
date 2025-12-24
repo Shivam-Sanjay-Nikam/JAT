@@ -111,8 +111,7 @@ export const useStreak = () => {
             const { data: productivity, error: productivityError } = await supabase
                 .rpc('get_productivity_stats', {
                     start_date: startOfYear,
-                    end_date: endOfYear,
-                    user_id_param: user.id // Pass user_id to the RPC function
+                    end_date: endOfYear
                 })
 
             if (historyError) throw historyError

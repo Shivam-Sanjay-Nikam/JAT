@@ -160,15 +160,17 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
 
             {/* Calendar Header */}
             <div className="border-b border-slate-800 pb-3">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                     <div className="flex items-center gap-2">
                         <CalendarIcon className="w-4 h-4 text-primary-500" />
                         <h3 className="text-sm font-bold text-white uppercase tracking-widest font-[Orbitron]">
                             Activity_Calendar
                         </h3>
+                    </div>
 
+                    <div className="flex items-center gap-4">
                         {/* View Toggle */}
-                        <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5 ml-4">
+                        <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5">
                             <button
                                 onClick={() => setViewMode('scheduled')}
                                 className={`px-2 py-1 text-[9px] font-mono tracking-wider transition-all rounded ${viewMode === 'scheduled'
@@ -188,27 +190,27 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                                 COMPLETED
                             </button>
                         </div>
-                    </div>
 
-                    {/* Month Navigation */}
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}
-                            className="p-1 text-slate-500 hover:text-primary-400 transition-colors"
-                            title="Previous month"
-                        >
-                            <ChevronLeft className="w-4 h-4" />
-                        </button>
-                        <span className="text-xs font-mono text-slate-400 min-w-[100px] text-center">
-                            {currentMonth.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase()}
-                        </span>
-                        <button
-                            onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}
-                            className="p-1 text-slate-500 hover:text-primary-400 transition-colors"
-                            title="Next month"
-                        >
-                            <ChevronRight className="w-4 h-4" />
-                        </button>
+                        {/* Month Navigation */}
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}
+                                className="p-1 text-slate-500 hover:text-primary-400 transition-colors"
+                                title="Previous month"
+                            >
+                                <ChevronLeft className="w-4 h-4" />
+                            </button>
+                            <span className="text-xs font-mono text-slate-400 min-w-[80px] text-center">
+                                {currentMonth.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase()}
+                            </span>
+                            <button
+                                onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}
+                                className="p-1 text-slate-500 hover:text-primary-400 transition-colors"
+                                title="Next month"
+                            >
+                                <ChevronRight className="w-4 h-4" />
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <p className="text-[10px] font-mono text-slate-500 mt-1">
