@@ -14,6 +14,7 @@ export const useStreak = () => {
     const [longestStreak, setLongestStreak] = useState(0)
     const [completionHistory, setCompletionHistory] = useState<DailyCompletion[]>([])
     const [productivityHistory, setProductivityHistory] = useState<{ completion_date: string, task_count: number }[]>([])
+    const [consistencyHistory, setConsistencyHistory] = useState<{ stat_date: string, total_due: number, completed_on_time: number }[]>([])
     const [loading, setLoading] = useState(true)
 
     // This function calculates streaks based on a given history and updates state
@@ -114,8 +115,16 @@ export const useStreak = () => {
                     end_date: endOfYear
                 })
 
+            // Fetch consistency stats (on-time completion)
+            const { data: consistency, error: consistencyError } = await supabase
+                .rpc('get_consistency_stats', {
+                    start_date: startOfYear,
+                    end_date: endOfYear
+                })
+
             if (historyError) throw historyError
-            if (productivityError) console.warn('Productivity stats fetch failed (migration run?):', productivityError)
+            if (productivityError) console.warn('Productivity stats fetch failed:', productivityError)
+            if (consistencyError) console.warn('Consistency stats fetch failed:', consistencyError)
 
             if (history) {
                 setCompletionHistory(history as DailyCompletion[])
@@ -124,6 +133,10 @@ export const useStreak = () => {
 
             if (productivity) {
                 setProductivityHistory(productivity)
+            }
+
+            if (consistency) {
+                setConsistencyHistory(consistency)
             }
         } catch (error) {
             console.error('Error fetching streak data:', error)
@@ -180,6 +193,7 @@ export const useStreak = () => {
         longestStreak,
         completionHistory,
         productivityHistory,
+        consistencyHistory,
         loading,
         refresh: fetchStreakData
     }

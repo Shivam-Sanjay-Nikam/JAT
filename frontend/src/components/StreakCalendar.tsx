@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react'
 import { useStreak } from '../hooks/useStreak'
-import { Flame, Trophy, Calendar as CalendarIcon, ChevronLeft, ChevronRight, CheckSquare } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Zap, Trophy, History, Flame, CheckSquare } from 'lucide-react'
+import { ConsistencyTrend } from './ConsistencyTrend'
 
 interface StreakCalendarProps {
     selectedDate?: Date
@@ -10,10 +11,10 @@ interface StreakCalendarProps {
 }
 
 export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, onDateSelect, allTimeStats }) => {
-    const { currentStreak, longestStreak, completionHistory, productivityHistory, loading } = useStreak()
+    const { currentStreak, longestStreak, completionHistory, productivityHistory, consistencyHistory, loading } = useStreak()
     const [hoveredDate, setHoveredDate] = useState<string | null>(null)
     const [currentMonth, setCurrentMonth] = useState(new Date())
-    const [viewMode, setViewMode] = useState<'scheduled' | 'productivity'>('scheduled')
+    const [viewMode, setViewMode] = useState<'scheduled' | 'productivity' | 'consistency'>('scheduled')
 
 
     // Generate calendar days for the selected month
@@ -46,31 +47,35 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
             const dateYear = date.getFullYear()
             const dateMonth = String(date.getMonth() + 1).padStart(2, '0')
             const dateDay = String(date.getDate()).padStart(2, '0')
-            const dateStr = `${dateYear}-${dateMonth}-${dateDay}`
+            const dateStr = `${dateYear} -${dateMonth} -${dateDay} `
 
             let completion: any = null
             let productivityCount = 0
+            let consistencyStats: any = null
 
             if (viewMode === 'scheduled') {
                 completion = completionHistory.find(c => c.date === dateStr)
-            } else {
+            } else if (viewMode === 'productivity') {
                 const prod = productivityHistory.find(p => p.completion_date === dateStr)
                 if (prod) {
                     productivityCount = prod.task_count
                 }
+            } else {
+                consistencyStats = consistencyHistory.find(c => c.stat_date === dateStr)
             }
 
             const today = new Date()
             const todayYear = today.getFullYear()
             const todayMonth = String(today.getMonth() + 1).padStart(2, '0')
             const todayDay = String(today.getDate()).padStart(2, '0')
-            const todayStr = `${todayYear}-${todayMonth}-${todayDay}`
+            const todayStr = `${todayYear} -${todayMonth} -${todayDay} `
             const isToday = dateStr === todayStr
 
             days.push({
                 date: dateStr,
                 completion: completion || null,
                 productivityCount,
+                consistencyStats: consistencyStats || null,
                 isToday,
                 isEmpty: false
             })
@@ -101,13 +106,22 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
             } else {
                 return 'bg-slate-800 border-slate-700'
             }
-        } else {
+        } else if (viewMode === 'productivity') {
             // Productivity Mode
             const count = day.productivityCount
             if (count === 0) return 'bg-slate-900 border-slate-800'
             if (count >= 5) return 'bg-green-500/40 border-green-500/60'
             if (count >= 3) return 'bg-green-500/25 border-green-500/40' // increased opacity
             return 'bg-green-500/10 border-green-500/20'
+        } else {
+            // Consistency Mode
+            const stats = day.consistencyStats
+            if (!stats || stats.total_due === 0) return 'bg-slate-900 border-slate-800'
+
+            const ratio = stats.completed_on_time / stats.total_due
+            if (ratio === 1) return 'bg-purple-500/50 border-purple-500/70'
+            if (ratio >= 0.5) return 'bg-purple-500/30 border-purple-500/50'
+            return 'bg-purple-500/10 border-purple-500/20'
         }
     }
 
@@ -117,6 +131,10 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
 
     const hoveredProductivity = hoveredDate
         ? productivityHistory.find(p => p.completion_date === hoveredDate)
+        : null
+
+    const hoveredConsistency = hoveredDate
+        ? consistencyHistory.find(c => c.stat_date === hoveredDate)
         : null
 
     return (
@@ -173,21 +191,30 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                         <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5">
                             <button
                                 onClick={() => setViewMode('scheduled')}
-                                className={`px-2 py-1 text-[9px] font-mono tracking-wider transition-all rounded ${viewMode === 'scheduled'
-                                    ? 'bg-primary-500/20 text-primary-400 font-bold shadow-sm'
-                                    : 'text-slate-500 hover:text-slate-300'
-                                    }`}
+                                className={`px - 2 py - 1 text - [9px] font - mono tracking - wider transition - all rounded ${viewMode === 'scheduled'
+                                        ? 'bg-primary-500/20 text-primary-400 font-bold shadow-sm'
+                                        : 'text-slate-500 hover:text-slate-300'
+                                    } `}
                             >
                                 SCHEDULED
                             </button>
                             <button
                                 onClick={() => setViewMode('productivity')}
-                                className={`px-2 py-1 text-[9px] font-mono tracking-wider transition-all rounded ${viewMode === 'productivity'
-                                    ? 'bg-green-500/20 text-green-400 font-bold shadow-sm'
-                                    : 'text-slate-500 hover:text-slate-300'
-                                    }`}
+                                className={`px - 2 py - 1 text - [9px] font - mono tracking - wider transition - all rounded ${viewMode === 'productivity'
+                                        ? 'bg-green-500/20 text-green-400 font-bold shadow-sm'
+                                        : 'text-slate-500 hover:text-slate-300'
+                                    } `}
                             >
                                 COMPLETED
+                            </button>
+                            <button
+                                onClick={() => setViewMode('consistency')}
+                                className={`px - 2 py - 1 text - [9px] font - mono tracking - wider transition - all rounded ${viewMode === 'consistency'
+                                        ? 'bg-purple-500/20 text-purple-400 font-bold shadow-sm'
+                                        : 'text-slate-500 hover:text-slate-300'
+                                    } `}
+                            >
+                                CONSISTENCY
                             </button>
                         </div>
 
@@ -242,12 +269,12 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                             <div className="grid grid-cols-7 gap-1">
                                 {calendarDays.map((day, idx) => (
                                     day.isEmpty ? (
-                                        <div key={`empty-${idx}`} className="w-10 h-10" />
+                                        <div key={`empty - ${idx} `} className="w-10 h-10" />
                                     ) : (
                                         <div
                                             key={day.date}
-                                            className={`w-12 h-12 border transition-all cursor-pointer hover:scale-105 relative flex flex-col items-center justify-center gap-0.5 ${selectedDate && day.date === selectedDate.toISOString().split('T')[0] ? 'bg-primary-500/20 border-primary-500 shadow-[0_0_15px_rgba(var(--primary-500),0.3)]' : getCellColor(day)
-                                                } ${day.isToday ? 'ring-1 ring-primary-400 ring-offset-1 ring-offset-slate-950' : ''}`}
+                                            className={`w - 12 h - 12 border transition - all cursor - pointer hover: scale - 105 relative flex flex - col items - center justify - center gap - 0.5 ${selectedDate && day.date === selectedDate.toISOString().split('T')[0] ? 'bg-primary-500/20 border-primary-500 shadow-[0_0_15px_rgba(var(--primary-500),0.3)]' : getCellColor(day)
+                                                } ${day.isToday ? 'ring-1 ring-primary-400 ring-offset-1 ring-offset-slate-950' : ''} `}
                                             onClick={() => onDateSelect?.(new Date(day.date))}
                                             onMouseEnter={() => setHoveredDate(day.date)}
                                             onMouseLeave={() => setHoveredDate(null)}
@@ -272,12 +299,21 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                                                         </div>
                                                     )}
                                                 </>
-                                            ) : (
+                                            ) : viewMode === 'productivity' ? (
                                                 <>
                                                     {day.productivityCount > 0 && (
                                                         <div className="flex items-center gap-[1px] text-[7px] font-mono z-10 leading-none bg-slate-950/40 px-1.5 py-px rounded-full backdrop-blur-[1px]">
                                                             <span className="text-green-400 font-bold">{day.productivityCount}</span>
                                                             <span className="text-slate-500 text-[6px]">DONE</span>
+                                                        </div>
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <>
+                                                    {/* Consistency View */}
+                                                    {day.consistencyStats && day.consistencyStats.total_due > 0 && (
+                                                        <div className="flex items-center gap-[1px] text-[7px] font-mono z-10 leading-none bg-slate-950/40 px-1.5 py-px rounded-full backdrop-blur-[1px]">
+                                                            <span className="text-purple-400 font-bold">{Math.round((day.consistencyStats.completed_on_time / day.consistencyStats.total_due) * 100)}%</span>
                                                         </div>
                                                     )}
                                                 </>
@@ -307,7 +343,7 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                             ) : (
                                 <div className="text-slate-500">No tasks scheduled</div>
                             )
-                        ) : (
+                        ) : viewMode === 'productivity' ? (
                             // Productivity Tooltip
                             hoveredProductivity ? (
                                 <div className="text-green-300">
@@ -315,6 +351,20 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                                 </div>
                             ) : (
                                 <div className="text-slate-500">No tasks completed</div>
+                            )
+                        ) : (
+                            // Consistency Tooltip
+                            hoveredConsistency ? (
+                                <>
+                                    <div className="text-purple-300">
+                                        {hoveredConsistency.completed_on_time}/{hoveredConsistency.total_due} completed ON TIME
+                                    </div>
+                                    <div className="text-slate-400 text-[10px] mt-1">
+                                        Tasks must be completed on the same day they were due to count here.
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="text-slate-500">No tasks scheduled</div>
                             )
                         )}
                     </div>
@@ -332,15 +382,25 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                             <div className="w-3 h-3 bg-primary-500/10 border border-primary-500/20" />
                             <div className="w-3 h-3 bg-primary-500/30 border border-primary-500/50" />
                         </>
-                    ) : (
+                    ) : viewMode === 'productivity' ? (
                         <>
                             <div className="w-3 h-3 bg-green-500/10 border border-green-500/20" />
                             <div className="w-3 h-3 bg-green-500/40 border border-green-500/60" />
+                        </>
+                    ) : (
+                        <>
+                            <div className="w-3 h-3 bg-purple-500/10 border border-purple-500/20" />
+                            <div className="w-3 h-3 bg-purple-500/50 border border-purple-500/70" />
                         </>
                     )}
                 </div>
                 <span>MORE</span>
             </div>
+
+            {/* Consistency Graph */}
+            {viewMode === 'consistency' && consistencyHistory.length > 0 && (
+                <ConsistencyTrend data={consistencyHistory} />
+            )}
         </div>
     )
 }
