@@ -47,7 +47,7 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
             const dateYear = date.getFullYear()
             const dateMonth = String(date.getMonth() + 1).padStart(2, '0')
             const dateDay = String(date.getDate()).padStart(2, '0')
-            const dateStr = `${dateYear} -${dateMonth} -${dateDay} `
+            const dateStr = `${dateYear}-${dateMonth}-${dateDay}`
 
             let completion: any = null
             let productivityCount = 0
@@ -68,7 +68,7 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
             const todayYear = today.getFullYear()
             const todayMonth = String(today.getMonth() + 1).padStart(2, '0')
             const todayDay = String(today.getDate()).padStart(2, '0')
-            const todayStr = `${todayYear} -${todayMonth} -${todayDay} `
+            const todayStr = `${todayYear}-${todayMonth}-${todayDay}`
             const isToday = dateStr === todayStr
 
             days.push({
