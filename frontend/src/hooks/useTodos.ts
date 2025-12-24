@@ -112,9 +112,16 @@ export const useTodos = (
         const todo = todos.find(t => t.id === id)
         if (!todo) return
 
+        const newIsCompleted = !todo.is_completed
+        // If marking complete, set completed_at to now (ISO string). If marking incomplete, set to null.
+        const completedAt = newIsCompleted ? new Date().toISOString() : null
+
         const { data, error } = await supabase
             .from('todos')
-            .update({ is_completed: !todo.is_completed })
+            .update({
+                is_completed: newIsCompleted,
+                completed_at: completedAt
+            })
             .eq('id', id)
             .select()
             .single()

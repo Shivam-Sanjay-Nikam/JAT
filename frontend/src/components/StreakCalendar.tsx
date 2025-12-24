@@ -10,9 +10,10 @@ interface StreakCalendarProps {
 }
 
 export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, onDateSelect, allTimeStats }) => {
-    const { currentStreak, longestStreak, completionHistory, loading } = useStreak()
+    const { currentStreak, longestStreak, completionHistory, productivityHistory, loading } = useStreak()
     const [hoveredDate, setHoveredDate] = useState<string | null>(null)
     const [currentMonth, setCurrentMonth] = useState(new Date())
+    const [viewMode, setViewMode] = useState<'scheduled' | 'productivity'>('scheduled')
 
 
     // Generate calendar days for the selected month
@@ -33,6 +34,7 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
             days.push({
                 date: '',
                 completion: null,
+                productivityCount: 0,
                 isToday: false,
                 isEmpty: true
             })
@@ -45,7 +47,18 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
             const dateMonth = String(date.getMonth() + 1).padStart(2, '0')
             const dateDay = String(date.getDate()).padStart(2, '0')
             const dateStr = `${dateYear}-${dateMonth}-${dateDay}`
-            const completion = completionHistory.find(c => c.date === dateStr)
+
+            let completion: any = null
+            let productivityCount = 0
+
+            if (viewMode === 'scheduled') {
+                completion = completionHistory.find(c => c.date === dateStr)
+            } else {
+                const prod = productivityHistory.find(p => p.completion_date === dateStr)
+                if (prod) {
+                    productivityCount = prod.task_count
+                }
+            }
 
             const today = new Date()
             const todayYear = today.getFullYear()
@@ -57,6 +70,7 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
             days.push({
                 date: dateStr,
                 completion: completion || null,
+                productivityCount,
                 isToday,
                 isEmpty: false
             })
@@ -73,22 +87,36 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
         weeks.push(calendarDays.slice(i, i + 7))
     }
 
-    const getCellColor = (completion: any) => {
-        if (!completion || completion.total_tasks === 0) {
-            return 'bg-slate-900 border-slate-800'
-        }
+    const getCellColor = (day: any) => {
+        if (viewMode === 'scheduled') {
+            const completion = day.completion
+            if (!completion || completion.total_tasks === 0) {
+                return 'bg-slate-900 border-slate-800'
+            }
 
-        if (completion.completion_percentage === 100) {
-            return 'bg-primary-500/30 border-primary-500/50'
-        } else if (completion.completion_percentage >= 50) {
-            return 'bg-primary-500/10 border-primary-500/20'
+            if (completion.completion_percentage === 100) {
+                return 'bg-primary-500/30 border-primary-500/50'
+            } else if (completion.completion_percentage >= 50) {
+                return 'bg-primary-500/10 border-primary-500/20'
+            } else {
+                return 'bg-slate-800 border-slate-700'
+            }
         } else {
-            return 'bg-slate-800 border-slate-700'
+            // Productivity Mode
+            const count = day.productivityCount
+            if (count === 0) return 'bg-slate-900 border-slate-800'
+            if (count >= 5) return 'bg-green-500/40 border-green-500/60'
+            if (count >= 3) return 'bg-green-500/25 border-green-500/40' // increased opacity
+            return 'bg-green-500/10 border-green-500/20'
         }
     }
 
     const hoveredCompletion = hoveredDate
         ? completionHistory.find(c => c.date === hoveredDate)
+        : null
+
+    const hoveredProductivity = hoveredDate
+        ? productivityHistory.find(p => p.completion_date === hoveredDate)
         : null
 
     return (
@@ -138,6 +166,28 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                         <h3 className="text-sm font-bold text-white uppercase tracking-widest font-[Orbitron]">
                             Activity_Calendar
                         </h3>
+
+                        {/* View Toggle */}
+                        <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5 ml-4">
+                            <button
+                                onClick={() => setViewMode('scheduled')}
+                                className={`px-2 py-1 text-[9px] font-mono tracking-wider transition-all rounded ${viewMode === 'scheduled'
+                                    ? 'bg-primary-500/20 text-primary-400 font-bold shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-300'
+                                    }`}
+                            >
+                                SCHEDULED
+                            </button>
+                            <button
+                                onClick={() => setViewMode('productivity')}
+                                className={`px-2 py-1 text-[9px] font-mono tracking-wider transition-all rounded ${viewMode === 'productivity'
+                                    ? 'bg-green-500/20 text-green-400 font-bold shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-300'
+                                    }`}
+                            >
+                                COMPLETED
+                            </button>
+                        </div>
                     </div>
 
                     {/* Month Navigation */}
@@ -194,7 +244,7 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                                     ) : (
                                         <div
                                             key={day.date}
-                                            className={`w-12 h-12 border transition-all cursor-pointer hover:scale-105 relative flex flex-col items-center justify-center gap-0.5 ${selectedDate && day.date === selectedDate.toISOString().split('T')[0] ? 'bg-primary-500/20 border-primary-500 shadow-[0_0_15px_rgba(var(--primary-500),0.3)]' : getCellColor(day.completion)
+                                            className={`w-12 h-12 border transition-all cursor-pointer hover:scale-105 relative flex flex-col items-center justify-center gap-0.5 ${selectedDate && day.date === selectedDate.toISOString().split('T')[0] ? 'bg-primary-500/20 border-primary-500 shadow-[0_0_15px_rgba(var(--primary-500),0.3)]' : getCellColor(day)
                                                 } ${day.isToday ? 'ring-1 ring-primary-400 ring-offset-1 ring-offset-slate-950' : ''}`}
                                             onClick={() => onDateSelect?.(new Date(day.date))}
                                             onMouseEnter={() => setHoveredDate(day.date)}
@@ -204,17 +254,31 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                                             <span className="text-[10px] font-bold text-slate-200 z-10 leading-none">
                                                 {new Date(day.date).getDate()}
                                             </span>
-                                            {day.completion && day.completion.total_tasks > 0 && (
-                                                <div className="flex items-center gap-[1px] text-[7px] font-mono z-10 leading-none bg-slate-950/40 px-1.5 py-px rounded-full backdrop-blur-[1px]">
-                                                    <span className="text-primary-400 font-bold">{day.completion.completed_tasks}</span>
-                                                    <span className="text-slate-500">/</span>
-                                                    <span className="text-slate-400">{day.completion.total_tasks}</span>
-                                                </div>
-                                            )}
-                                            {day.completion?.completion_percentage === 100 && (
-                                                <div className="absolute -top-1 -right-1 z-20 pointer-events-none filter drop-shadow-md">
-                                                    <span className="text-[10px]">🔥</span>
-                                                </div>
+
+                                            {viewMode === 'scheduled' ? (
+                                                <>
+                                                    {day.completion && day.completion.total_tasks > 0 && (
+                                                        <div className="flex items-center gap-[1px] text-[7px] font-mono z-10 leading-none bg-slate-950/40 px-1.5 py-px rounded-full backdrop-blur-[1px]">
+                                                            <span className="text-primary-400 font-bold">{day.completion.completed_tasks}</span>
+                                                            <span className="text-slate-500">/</span>
+                                                            <span className="text-slate-400">{day.completion.total_tasks}</span>
+                                                        </div>
+                                                    )}
+                                                    {day.completion?.completion_percentage === 100 && (
+                                                        <div className="absolute -top-1 -right-1 z-20 pointer-events-none filter drop-shadow-md">
+                                                            <span className="text-[10px]">🔥</span>
+                                                        </div>
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <>
+                                                    {day.productivityCount > 0 && (
+                                                        <div className="flex items-center gap-[1px] text-[7px] font-mono z-10 leading-none bg-slate-950/40 px-1.5 py-px rounded-full backdrop-blur-[1px]">
+                                                            <span className="text-green-400 font-bold">{day.productivityCount}</span>
+                                                            <span className="text-slate-500 text-[6px]">DONE</span>
+                                                        </div>
+                                                    )}
+                                                </>
                                             )}
                                         </div>
                                     )
@@ -228,17 +292,28 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                 {hoveredDate && (
                     <div className="mt-4 p-3 bg-slate-900 border border-primary-500/30 text-xs font-mono">
                         <div className="text-primary-400 mb-1">{new Date(hoveredDate).toLocaleDateString()}</div>
-                        {hoveredCompletion ? (
-                            <>
-                                <div className="text-slate-300">
-                                    {hoveredCompletion.completed_tasks}/{hoveredCompletion.total_tasks} tasks completed
-                                </div>
-                                <div className="text-slate-400">
-                                    {hoveredCompletion.completion_percentage}% complete
-                                </div>
-                            </>
+                        {viewMode === 'scheduled' ? (
+                            hoveredCompletion ? (
+                                <>
+                                    <div className="text-slate-300">
+                                        {hoveredCompletion.completed_tasks}/{hoveredCompletion.total_tasks} tasks completed
+                                    </div>
+                                    <div className="text-slate-400">
+                                        {hoveredCompletion.completion_percentage}% complete
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="text-slate-500">No tasks scheduled</div>
+                            )
                         ) : (
-                            <div className="text-slate-500">No tasks</div>
+                            // Productivity Tooltip
+                            hoveredProductivity ? (
+                                <div className="text-green-300">
+                                    {hoveredProductivity.task_count} tasks completed on this day
+                                </div>
+                            ) : (
+                                <div className="text-slate-500">No tasks completed</div>
+                            )
                         )}
                     </div>
                 )}
@@ -250,8 +325,17 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                 <div className="flex gap-1">
                     <div className="w-3 h-3 bg-slate-900 border border-slate-800" />
                     <div className="w-3 h-3 bg-slate-800 border border-slate-700" />
-                    <div className="w-3 h-3 bg-primary-500/10 border border-primary-500/20" />
-                    <div className="w-3 h-3 bg-primary-500/30 border border-primary-500/50" />
+                    {viewMode === 'scheduled' ? (
+                        <>
+                            <div className="w-3 h-3 bg-primary-500/10 border border-primary-500/20" />
+                            <div className="w-3 h-3 bg-primary-500/30 border border-primary-500/50" />
+                        </>
+                    ) : (
+                        <>
+                            <div className="w-3 h-3 bg-green-500/10 border border-green-500/20" />
+                            <div className="w-3 h-3 bg-green-500/40 border border-green-500/60" />
+                        </>
+                    )}
                 </div>
                 <span>MORE</span>
             </div>

@@ -50,6 +50,7 @@ export interface Todo {
     title: string
     is_completed: boolean
     date: string // ISO date string (YYYY-MM-DD)
+    completed_at?: string | null // ISO timestamp
     created_at: string
     updated_at: string
 }
