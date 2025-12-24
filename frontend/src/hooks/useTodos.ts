@@ -102,7 +102,6 @@ export const useTodos = (
             console.error('Error adding todo:', error)
         } else if (data) {
             setTodos(prev => [...prev, data])
-            setTodos(prev => [...prev, data])
             // Check completion status after adding
             await checkDailyCompletion(dateStr)
             await fetchAllTimeStats()
@@ -212,7 +211,10 @@ export const useTodos = (
                     if (payload.eventType === 'INSERT') {
                         const newTodo = payload.new as Todo
                         if (newTodo.date === dateStr) {
-                            setTodos(prev => [...prev, newTodo])
+                            setTodos(prev => {
+                                if (prev.some(t => t.id === newTodo.id)) return prev
+                                return [...prev, newTodo]
+                            })
                         }
                     } else if (payload.eventType === 'UPDATE') {
                         const updatedTodo = payload.new as Todo
