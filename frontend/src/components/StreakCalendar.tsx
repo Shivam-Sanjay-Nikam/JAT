@@ -16,6 +16,16 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
     const [currentMonth, setCurrentMonth] = useState(new Date())
     const [viewMode, setViewMode] = useState<'scheduled' | 'productivity' | 'consistency'>('scheduled')
 
+    // Derived state for the sidebar details (default to selectedDate, fallback to hovered, then today)
+    const activeDateStr = hoveredDate || (selectedDate ? selectedDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0])
+
+    // Determine title for the segmented control
+    const viewTitle = {
+        'scheduled': 'PLAN ADHERENCE',
+        'productivity': 'TOTAL OUTPUT',
+        'consistency': 'DISCIPLINE'
+    }[viewMode]
+
 
     // Generate calendar days for the selected month
     const generateCalendarDays = () => {
@@ -197,35 +207,21 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                     </div>
 
                     <div className="flex items-center gap-4">
-                        {/* View Toggle */}
-                        <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5">
-                            <button
-                                onClick={() => setViewMode('scheduled')}
-                                className={`px - 2 py - 1 text - [9px] font - mono tracking - wider transition - all rounded ${viewMode === 'scheduled'
-                                    ? 'bg-primary-500/20 text-primary-400 font-bold shadow-sm'
-                                    : 'text-slate-500 hover:text-slate-300'
-                                    } `}
-                            >
-                                SCHEDULED
-                            </button>
-                            <button
-                                onClick={() => setViewMode('productivity')}
-                                className={`px - 2 py - 1 text - [9px] font - mono tracking - wider transition - all rounded ${viewMode === 'productivity'
-                                    ? 'bg-green-500/20 text-green-400 font-bold shadow-sm'
-                                    : 'text-slate-500 hover:text-slate-300'
-                                    } `}
-                            >
-                                COMPLETED
-                            </button>
-                            <button
-                                onClick={() => setViewMode('consistency')}
-                                className={`px - 2 py - 1 text - [9px] font - mono tracking - wider transition - all rounded ${viewMode === 'consistency'
-                                    ? 'bg-purple-500/20 text-purple-400 font-bold shadow-sm'
-                                    : 'text-slate-500 hover:text-slate-300'
-                                    } `}
-                            >
-                                CONSISTENCY
-                            </button>
+                        {/* Segmented Control Toggle */}
+                        <div className="relative flex items-center bg-slate-950/50 p-1 rounded-lg border border-slate-800/50">
+                            {/* Sliding Indicator Background (Simplified for React without framer-motion: just conditional styling) */}
+                            {['scheduled', 'productivity', 'consistency'].map((mode) => (
+                                <button
+                                    key={mode}
+                                    onClick={() => setViewMode(mode as any)}
+                                    className={`relative z-10 px-3 py-1.5 text-[10px] font-bold font-mono uppercase tracking-wider transition-all duration-300 rounded-md ${viewMode === mode
+                                        ? 'text-white bg-slate-800 shadow-sm ring-1 ring-slate-700'
+                                        : 'text-slate-500 hover:text-slate-300'
+                                        }`}
+                                >
+                                    {mode === 'scheduled' ? 'Plan' : mode === 'productivity' ? 'Output' : 'Focus'}
+                                </button>
+                            ))}
                         </div>
 
                         {/* Month Navigation */}
@@ -283,8 +279,10 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                                     ) : (
                                         <div
                                             key={day.date}
-                                            className={`w-12 h-12 border transition-all cursor-pointer hover:scale-105 relative flex flex-col items-center justify-center gap-0.5 ${selectedDate && isSameDate(selectedDate, day.date) ? 'bg-primary-500/20 border-primary-500 shadow-[0_0_15px_rgba(var(--primary-500),0.3)]' : getCellColor(day)
-                                                } ${day.isToday ? 'ring-1 ring-primary-400 ring-offset-1 ring-offset-slate-950' : ''}`}
+                                            className={`w-12 h-12 border transition-all duration-300 cursor-pointer relative flex flex-col items-center justify-center gap-0.5 rounded-lg group ${selectedDate && isSameDate(selectedDate, day.date)
+                                                ? 'bg-primary-500/20 border-primary-500/80 shadow-[0_0_20px_rgba(var(--primary-500),0.3)] z-10'
+                                                : 'hover:bg-slate-800/50 hover:border-slate-600 ' + getCellColor(day)
+                                                } ${day.isToday && !(selectedDate && isSameDate(selectedDate, day.date)) ? 'ring-1 ring-primary-500/50' : ''}`}
                                             onClick={() => onDateSelect?.(new Date(day.date))}
                                             onMouseEnter={() => setHoveredDate(day.date)}
                                             onMouseLeave={() => setHoveredDate(null)}
@@ -341,49 +339,99 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                     </div>
                 )}
 
-                {/* Tooltip */}
-                {hoveredDate && (
-                    <div className="mt-4 p-3 bg-slate-900 border border-primary-500/30 text-xs font-mono">
-                        <div className="text-primary-400 mb-1">{new Date(hoveredDate).toLocaleDateString()}</div>
-                        {viewMode === 'scheduled' ? (
-                            hoveredCompletion ? (
-                                <>
-                                    <div className="text-slate-300">
-                                        {hoveredCompletion.completed_tasks}/{hoveredCompletion.total_tasks} tasks completed
-                                    </div>
-                                    <div className="text-slate-400">
-                                        {hoveredCompletion.completion_percentage}% complete
-                                    </div>
-                                </>
+                {/* Divider */}
+                <div className="h-px w-full bg-slate-800/50 mt-6 mb-6" />
+
+                {/* Persistent Day Details Panel */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    {/* Left: Active Date Info */}
+                    <div className="bg-slate-900/40 border border-slate-800/50 rounded-xl p-4 flex flex-col justify-between backdrop-blur-sm">
+                        <div className="flex items-center justify-between mb-4">
+                            <span className="text-xs font-mono text-slate-500 uppercase tracking-widest">
+                                {new Date(activeDateStr).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                            </span>
+                            {activeDateStr === new Date().toISOString().split('T')[0] && (
+                                <span className="text-[10px] font-bold bg-primary-500/20 text-primary-400 px-2 py-0.5 rounded-full">TODAY</span>
+                            )}
+                        </div>
+
+                        <div className="space-y-4">
+                            {/* Dynamic Stats based on Active Date */}
+                            {(() => {
+                                const comp = completionHistory.find(c => c.date === activeDateStr)
+                                const prod = productivityHistory.find(p => p.completion_date === activeDateStr)
+                                const cons = consistencyHistory.find(c => c.stat_date === activeDateStr)
+
+                                return (
+                                    <>
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                                                <span className="text-sm font-mono text-slate-400">Scheduled</span>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="text-sm font-bold text-white tabular-nums">
+                                                    {comp ? `${comp.completed_tasks}/${comp.total_tasks}` : '0/0'}
+                                                </div>
+                                                {comp && comp.total_tasks > 0 && <div className="text-[10px] text-slate-500">{comp.completion_percentage}%</div>}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                                                <span className="text-sm font-mono text-slate-400">Total Output</span>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="text-sm font-bold text-white tabular-nums">
+                                                    {prod ? prod.task_count : 0}
+                                                </div>
+                                                <div className="text-[10px] text-slate-500">Tasks Done</div>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                                                <span className="text-sm font-mono text-slate-400">Consistency</span>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="text-sm font-bold text-white tabular-nums">
+                                                    {cons && cons.total_due > 0 ? Math.round((cons.completed_on_time / cons.total_due) * 100) : 0}%
+                                                </div>
+                                                <div className="text-[10px] text-slate-500">On Time</div>
+                                            </div>
+                                        </div>
+                                    </>
+                                )
+                            })()}
+                        </div>
+                    </div>
+
+                    {/* Right: Contextual Insight or Graph */}
+                    <div className="flex flex-col">
+                        {viewMode === 'consistency' ? (
+                            consistencyHistory.length > 0 ? (
+                                <ConsistencyTrend data={consistencyHistory} />
                             ) : (
-                                <div className="text-slate-500">No tasks scheduled</div>
-                            )
-                        ) : viewMode === 'productivity' ? (
-                            // Productivity Tooltip
-                            hoveredProductivity ? (
-                                <div className="text-green-300">
-                                    {hoveredProductivity.task_count} tasks completed on this day
+                                <div className="h-full flex items-center justify-center text-slate-600 text-xs font-mono border border-dashed border-slate-800 rounded-xl">
+                                    Not enough data for trend
                                 </div>
-                            ) : (
-                                <div className="text-slate-500">No tasks completed</div>
                             )
                         ) : (
-                            // Consistency Tooltip
-                            hoveredConsistency ? (
-                                <>
-                                    <div className="text-purple-300">
-                                        {hoveredConsistency.completed_on_time}/{hoveredConsistency.total_due} completed ON TIME
-                                    </div>
-                                    <div className="text-slate-400 text-[10px] mt-1">
-                                        Tasks must be completed on the same day they were due to count here.
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="text-slate-500">No tasks scheduled</div>
-                            )
+                            <div className="h-full bg-slate-900/40 border border-slate-800/50 rounded-xl p-4 flex items-center justify-center text-center">
+                                <div>
+                                    <Trophy className="w-8 h-8 text-slate-700 mx-auto mb-2" />
+                                    <p className="text-xs text-slate-500 max-w-[200px] leading-relaxed">
+                                        {viewMode === 'scheduled'
+                                            ? "Focus on completing fully what you planned for the day."
+                                            : "Any task completed today counts towards your total output."}
+                                    </p>
+                                </div>
+                            </div>
                         )}
                     </div>
-                )}
+                </div>
             </div>
 
             {/* Legend */}
@@ -412,10 +460,7 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({ selectedDate, on
                 <span>MORE</span>
             </div>
 
-            {/* Consistency Graph */}
-            {viewMode === 'consistency' && consistencyHistory.length > 0 && (
-                <ConsistencyTrend data={consistencyHistory} />
-            )}
+
         </div>
     )
 }

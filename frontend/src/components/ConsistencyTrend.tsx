@@ -10,7 +10,6 @@ export const ConsistencyTrend: React.FC<ConsistencyTrendProps> = ({ data }) => {
     const cutoff = new Date(today.setDate(today.getDate() - 30)).toISOString().split('T')[0]
 
     // Process data into percentages
-    // Sort by date ascending just in case
     const sortedData = [...data]
         .filter(d => d.stat_date >= cutoff)
         .sort((a, b) => new Date(a.stat_date).getTime() - new Date(b.stat_date).getTime())
@@ -22,67 +21,95 @@ export const ConsistencyTrend: React.FC<ConsistencyTrendProps> = ({ data }) => {
     if (sortedData.length < 2) return null
 
     // SVG Dimensions
-    const height = 40
+    const height = 60
     const width = 100 // percentages
 
-    // Calculate points
+    // Generate Smooth Bezier Path (Catmull-Rom or similar simple smoothing)
+    // For simplicity and dependency-free, we will use a basic cubic bezier algorithm
     const points = sortedData.map((d, i) => {
         const x = (i / (sortedData.length - 1)) * width
         const y = height - ((d.percent / 100) * height)
-        return `${x},${y}`
-    }).join(' ')
+        return [x, y]
+    })
+
+    const lineCommand = points.reduce((acc, point, i, a) => {
+        if (i === 0) return `M ${point[0]},${point[1]}`
+
+        const current = point
+        const previous = a[i - 1]
+
+        // Control points (simple smoothing)
+        const cpsX = (current[0] - previous[0]) / 3
+        const cp1 = [previous[0] + cpsX, previous[1]]
+        const cp2 = [current[0] - cpsX, current[1]]
+
+        return `${acc} C ${cp1[0]},${cp1[1]} ${cp2[0]},${cp2[1]} ${current[0]},${current[1]}`
+    }, '')
 
     const average = Math.round(sortedData.reduce((acc, curr) => acc + curr.percent, 0) / sortedData.length)
 
     return (
-        <div className="mt-6 p-4 bg-slate-900/50 border border-purple-500/20 rounded-lg">
-            <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-mono text-purple-400 uppercase tracking-widest">30-Day Trend</span>
-                <span className="text-xs font-bold text-white">{average}% Avg</span>
+        <div className="mt-8 p-6 bg-slate-900/40 border border-slate-800/50 rounded-2xl backdrop-blur-sm relative overflow-hidden group">
+            {/* Background Gradient Mesh */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl -z-10 transition-opacity duration-700 group-hover:opacity-70" />
+
+            <div className="flex items-end justify-between mb-6">
+                <div>
+                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest font-[Orbitron] mb-1">Consistency Trend</h4>
+                    <p className="text-[10px] text-slate-500 font-mono">Last 30 Days</p>
+                </div>
+                <div className="flex flex-col items-end">
+                    <span className="text-2xl font-bold text-white tabular-nums tracking-tight">{average}%</span>
+                    <span className="text-[10px] text-purple-400 font-medium">Average</span>
+                </div>
             </div>
 
-            <div className="relative h-10 w-full">
+            <div className="relative h-16 w-full">
                 <svg
-                    viewBox={`0 0 ${width} ${height}`}
+                    viewBox={`0 -5 ${width} ${height + 10}`}
                     preserveAspectRatio="none"
                     className="w-full h-full overflow-visible"
                 >
-                    {/* Grid lines */}
-                    <line x1="0" y1={height} x2={width} y2={height} stroke="#334155" strokeWidth="0.5" />
-                    <line x1="0" y1="0" x2={width} y2="0" stroke="#334155" strokeWidth="0.5" strokeDasharray="2 2" />
+                    <defs>
+                        <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#a855f7" stopOpacity="0.4" />
+                            <stop offset="100%" stopColor="#a855f7" stopOpacity="0" />
+                        </linearGradient>
+                    </defs>
 
-                    {/* Path */}
-                    <polyline
+                    {/* Grid line at 50% and 100% */}
+                    <line x1="0" y1={height / 2} x2={width} y2={height / 2} stroke="#334155" strokeWidth="0.5" strokeDasharray="3 3" opacity="0.3" />
+                    <line x1="0" y1="0" x2={width} y2="0" stroke="#334155" strokeWidth="0.5" strokeDasharray="3 3" opacity="0.3" />
+
+                    {/* Filled Area */}
+                    <path
+                        d={`${lineCommand} L ${width},${height} L 0,${height} Z`}
+                        fill="url(#trendGradient)"
+                    />
+
+                    {/* Line Path */}
+                    <path
+                        d={lineCommand}
                         fill="none"
-                        stroke="#a855f7" // purple-500
+                        stroke="#a855f7"
                         strokeWidth="1.5"
-                        points={points}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         vectorEffect="non-scaling-stroke"
+                        className="drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]"
                     />
 
-                    {/* Area below */}
-                    <polygon
-                        fill="rgba(168, 85, 247, 0.1)"
-                        points={`0,${height} ${points} ${width},${height}`}
-                    />
-
-                    {/* Dots */}
-                    {sortedData.map((d, i) => {
-                        const x = (i / (sortedData.length - 1)) * width
-                        const y = height - ((d.percent / 100) * height)
-                        return (
-                            <circle
-                                key={i}
-                                cx={x}
-                                cy={y}
-                                r="1.5"
-                                className="fill-purple-500 hover:r-2 transition-all"
-                                vectorEffect="non-scaling-stroke"
-                            >
-                                <title>{new Date(d.date).toLocaleDateString()}: {Math.round(d.percent)}%</title>
-                            </circle>
-                        )
-                    })}
+                    {/* Hover Interaction (invisible points for tooltip in future, currently just visual dots) */}
+                    {points.map((p, i) => (
+                        <circle
+                            key={i}
+                            cx={p[0]}
+                            cy={p[1]}
+                            r="0"
+                            className="fill-white stroke-purple-500 stroke-2 transition-all duration-300 group-hover:r-[1.5]"
+                            vectorEffect="non-scaling-stroke"
+                        />
+                    ))}
                 </svg>
             </div>
         </div>
