@@ -16,198 +16,172 @@ export const useStreak = () => {
     const [productivityHistory, setProductivityHistory] = useState<{ completion_date: string, task_count: number }[]>([])
     const [loading, setLoading] = useState(true)
 
-    const fetchCompletionHistory = async (days: number = 365) => {
-        setLoading(true)
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) {
-            setLoading(false)
-            return
+    // This function calculates streaks based on a given history and updates state
+    const calculateStreak = (history: DailyCompletion[]) => {
+        let current = 0
+        let longest = 0
+        let tempSequence = 0
+
+        // Calculate streaks based on history
+        // Sort history by date descending for current streak
+        const sortedHistory = [...history].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+        const today = new Date().toISOString().split('T')[0]
+        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
+
+        // Current Streak
+        // Check if today or yesterday is 100% complete
+        if (sortedHistory.length > 0) {
+            const latestCompletion = sortedHistory[0];
+            if (latestCompletion.completion_percentage === 100 && latestCompletion.date === today) {
+                current++;
+            } else if (latestCompletion.completion_percentage === 100 && latestCompletion.date === yesterday) {
+                // If yesterday was 100% and today isn't in history yet, or isn't 100%, current streak starts from yesterday
+                current++;
+            }
         }
 
-        // Calculate date range
-        const endDate = new Date()
-        const startDate = new Date()
-        startDate.setDate(startDate.getDate() - days)
+        // Continue checking backwards from the latest relevant day
+        for (let i = 0; i < sortedHistory.length; i++) {
+            const day = sortedHistory[i];
+            const prevDay = sortedHistory[i - 1];
 
-        const { data, error } = await supabase
-            .from('daily_completions')
-            .select('*')
-        // This function calculates streaks based on a given history and updates state
-        const calculateStreak = (history: DailyCompletion[]) => {
-            let current = 0
-            let longest = 0
-            let tempSequence = 0
+            if (day.completion_percentage === 100) {
+                if (i === 0) {
+                    // Already handled the first day (today/yesterday)
+                } else {
+                    const dayDate = new Date(day.date);
+                    const prevDayDate = new Date(prevDay.date);
+                    const diffTime = Math.abs(prevDayDate.getTime() - dayDate.getTime());
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-            // Calculate streaks based on history
-            // Sort history by date descending for current streak
-            const sortedHistory = [...history].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-
-            const today = new Date().toISOString().split('T')[0]
-            const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
-
-            // Current Streak
-            // Check if today or yesterday is 100% complete
-            if (sortedHistory.length > 0) {
-                const latestCompletion = sortedHistory[0];
-                if (latestCompletion.completion_percentage === 100 && latestCompletion.date === today) {
-                    current++;
-                } else if (latestCompletion.completion_percentage === 100 && latestCompletion.date === yesterday) {
-                    // If yesterday was 100% and today isn't in history yet, or isn't 100%, current streak starts from yesterday
-                    current++;
-                }
-            }
-
-            // Continue checking backwards from the latest relevant day
-            for (let i = 0; i < sortedHistory.length; i++) {
-                const day = sortedHistory[i];
-                const prevDay = sortedHistory[i - 1];
-
-                if (day.completion_percentage === 100) {
-                    if (i === 0) {
-                        // Already handled the first day (today/yesterday)
-                        // If it's today and 100%, current is 1. If it's yesterday and 100% and today is not in history, current is 1.
-                        // The initial check above handles this.
+                    if (diffDays === 1 && prevDay.completion_percentage === 100) {
+                        current++;
                     } else {
-                        const dayDate = new Date(day.date);
-                        const prevDayDate = new Date(prevDay.date);
-                        const diffTime = Math.abs(prevDayDate.getTime() - dayDate.getTime());
-                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                        if (diffDays === 1 && prevDay.completion_percentage === 100) {
-                            current++;
-                        } else {
-                            // Break if the sequence is broken or not 100%
-                            break;
-                        }
+                        // Break if the sequence is broken or not 100%
+                        break;
                     }
-                } else {
-                    // If the current day is not 100%, the current streak is broken
-                    break;
                 }
+            } else {
+                // If the current day is not 100%, the current streak is broken
+                break;
             }
-
-            // Longest Streak
-            // Sort ascending for easier sequential calculation
-            const ascendingHistory = [...history].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-
-            ascendingHistory.forEach((day) => {
-                if (day.completion_percentage === 100) {
-                    tempSequence++
-                } else {
-                    longest = Math.max(longest, tempSequence)
-                    tempSequence = 0
-                }
-            })
-            longest = Math.max(longest, tempSequence) // Account for a streak ending at the end of the history
-
-            setCurrentStreak(current)
-            setLongestStreak(longest)
         }
 
-        const fetchStreakData = async () => {
-            try {
-                setLoading(true)
-                const { data: { user } } = await supabase.auth.getUser()
+        // Longest Streak
+        // Sort ascending for easier sequential calculation
+        const ascendingHistory = [...history].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
-                if (!user) {
-                    setLoading(false)
-                    return
-                }
+        ascendingHistory.forEach((day) => {
+            if (day.completion_percentage === 100) {
+                tempSequence++
+            } else {
+                longest = Math.max(longest, tempSequence)
+                tempSequence = 0
+            }
+        })
+        longest = Math.max(longest, tempSequence) // Account for a streak ending at the end of the history
 
-                // Fetch daily completions for streak and history
-                const { data: history, error: historyError } = await supabase
-                    .from('daily_completions')
-                    .select('*')
-                    .eq('user_id', user.id)
-                    .order('date', { ascending: true })
+        setCurrentStreak(current)
+        setLongestStreak(longest)
+    }
 
-                // Fetch productivity stats (completions per day)
-                // Using a simple query since we added the function, 
-                // but for now let's try calling the RPC function we planned.
-                // If the user hasn't run the migration yet, this might fail, so we wrap in try/catch or checks.
-                const today = new Date()
-                const startOfYear = new Date(today.getFullYear(), 0, 1).toISOString().split('T')[0]
-                const endOfYear = new Date(today.getFullYear(), 11, 31).toISOString().split('T')[0]
+    const fetchStreakData = async () => {
+        try {
+            setLoading(true)
+            const { data: { user } } = await supabase.auth.getUser()
 
-                const { data: productivity, error: productivityError } = await supabase
-                    .rpc('get_productivity_stats', {
-                        start_date: startOfYear,
-                        end_date: endOfYear,
-                        user_id_param: user.id // Pass user_id to the RPC function
-                    })
-
-                if (historyError) throw historyError
-                // We ignore productivityError strictly to prevent breaking if migration isn't run, 
-                // but we log it.
-                if (productivityError) console.warn('Productivity stats fetch failed (migration run?):', productivityError)
-
-                if (history) {
-                    setCompletionHistory(history as DailyCompletion[])
-                    calculateStreak(history as DailyCompletion[])
-                }
-
-                if (productivity) {
-                    // Map to a format useful for the calendar (date -> count)
-                    // We can reuse the DailyCompletion structure internally or just return the map
-                    // For now, let's just expose the raw array
-                    setProductivityHistory(productivity)
-                }
-            } catch (error) {
-                console.error('Error fetching streak data:', error)
-            } finally {
+            if (!user) {
                 setLoading(false)
-            }
-        }
-
-        useEffect(() => {
-            fetchStreakData()
-
-            // Subscribe to real-time changes in daily_completions
-            const setupSubscription = async () => {
-                const { data: { user: userData } } = await supabase.auth.getUser()
-
-                if (!userData) return
-
-                const subscription = supabase
-                    .channel('daily-completions-changes')
-                    .on('postgres_changes', {
-                        event: '*',
-                        schema: 'public',
-                        table: 'daily_completions',
-                        filter: `user_id=eq.${userData.id}`
-                    }, () => {
-                        // Refresh streak data when completions change
-                        fetchStreakData()
-                    })
-                    .subscribe()
-
-                return subscription
+                return
             }
 
-            let subscription: any
+            // Fetch daily completions for streak and history
+            const { data: history, error: historyError } = await supabase
+                .from('daily_completions')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('date', { ascending: true })
 
-            setupSubscription().then(sub => {
-                subscription = sub
-            })
+            // Fetch productivity stats (completions per day)
+            const today = new Date()
+            const startOfYear = new Date(today.getFullYear(), 0, 1).toISOString().split('T')[0]
+            const endOfYear = new Date(today.getFullYear(), 11, 31).toISOString().split('T')[0]
 
-            // Listen for manual refresh events from todo updates
-            const handleRefresh = () => {
-                fetchStreakData()
+            const { data: productivity, error: productivityError } = await supabase
+                .rpc('get_productivity_stats', {
+                    start_date: startOfYear,
+                    end_date: endOfYear,
+                    user_id_param: user.id // Pass user_id to the RPC function
+                })
+
+            if (historyError) throw historyError
+            if (productivityError) console.warn('Productivity stats fetch failed (migration run?):', productivityError)
+
+            if (history) {
+                setCompletionHistory(history as DailyCompletion[])
+                calculateStreak(history as DailyCompletion[])
             }
-            window.addEventListener('refresh-calendar', handleRefresh)
 
-            return () => {
-                window.removeEventListener('refresh-calendar', handleRefresh)
-                if (subscription) subscription.unsubscribe()
+            if (productivity) {
+                setProductivityHistory(productivity)
             }
-        }, [])
-
-        return {
-            currentStreak,
-            longestStreak,
-            completionHistory,
-            productivityHistory, // Export this
-            loading,
-            refresh: fetchStreakData
+        } catch (error) {
+            console.error('Error fetching streak data:', error)
+        } finally {
+            setLoading(false)
         }
     }
+
+    useEffect(() => {
+        fetchStreakData()
+
+        // Subscribe to real-time changes in daily_completions
+        const setupSubscription = async () => {
+            const { data: { user: userData } } = await supabase.auth.getUser()
+
+            if (!userData) return
+
+            const subscription = supabase
+                .channel('daily-completions-changes')
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: 'daily_completions',
+                    filter: `user_id=eq.${userData.id}`
+                }, () => {
+                    // Refresh streak data when completions change
+                    fetchStreakData()
+                })
+                .subscribe()
+
+            return subscription
+        }
+
+        let subscription: any
+
+        setupSubscription().then(sub => {
+            subscription = sub
+        })
+
+        // Listen for manual refresh events from todo updates
+        const handleRefresh = () => {
+            fetchStreakData()
+        }
+        window.addEventListener('refresh-calendar', handleRefresh)
+
+        return () => {
+            window.removeEventListener('refresh-calendar', handleRefresh)
+            if (subscription) subscription.unsubscribe()
+        }
+    }, [])
+
+    return {
+        currentStreak,
+        longestStreak,
+        completionHistory,
+        productivityHistory,
+        loading,
+        refresh: fetchStreakData
+    }
+}
