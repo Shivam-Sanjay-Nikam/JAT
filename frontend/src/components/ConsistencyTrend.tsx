@@ -49,22 +49,22 @@ export const ConsistencyTrend: React.FC<ConsistencyTrendProps> = ({ data }) => {
     const average = Math.round(sortedData.reduce((acc, curr) => acc + curr.percent, 0) / sortedData.length)
 
     return (
-        <div className="mt-8 p-6 bg-slate-900/40 border border-slate-800/50 rounded-2xl backdrop-blur-sm relative overflow-hidden group">
+        <div className="w-full h-full bg-slate-900/40 border border-slate-800/50 rounded-xl p-4 backdrop-blur-sm relative overflow-hidden group flex flex-col justify-between">
             {/* Background Gradient Mesh */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl -z-10 transition-opacity duration-700 group-hover:opacity-70" />
 
-            <div className="flex items-end justify-between mb-6">
+            <div className="flex items-end justify-between mb-2">
                 <div>
-                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest font-[Orbitron] mb-1">Consistency Trend</h4>
-                    <p className="text-[10px] text-slate-500 font-mono">Last 30 Days</p>
+                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest font-[Orbitron] mb-0.5">Trend</h4>
+                    <p className="text-[9px] text-slate-500 font-mono">30 Days</p>
                 </div>
                 <div className="flex flex-col items-end">
-                    <span className="text-2xl font-bold text-white tabular-nums tracking-tight">{average}%</span>
-                    <span className="text-[10px] text-purple-400 font-medium">Average</span>
+                    <span className="text-xl font-bold text-white tabular-nums tracking-tight">{average}%</span>
+                    <span className="text-[9px] text-purple-400 font-medium">Avg</span>
                 </div>
             </div>
 
-            <div className="relative h-16 w-full">
+            <div className="relative h-12 w-full flex-1 min-h-[50px]">
                 <svg
                     viewBox={`0 -5 ${width} ${height + 10}`}
                     preserveAspectRatio="none"
@@ -72,14 +72,13 @@ export const ConsistencyTrend: React.FC<ConsistencyTrendProps> = ({ data }) => {
                 >
                     <defs>
                         <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#a855f7" stopOpacity="0.4" />
+                            <stop offset="0%" stopColor="#a855f7" stopOpacity="0.3" />
                             <stop offset="100%" stopColor="#a855f7" stopOpacity="0" />
                         </linearGradient>
                     </defs>
 
-                    {/* Grid line at 50% and 100% */}
-                    <line x1="0" y1={height / 2} x2={width} y2={height / 2} stroke="#334155" strokeWidth="0.5" strokeDasharray="3 3" opacity="0.3" />
-                    <line x1="0" y1="0" x2={width} y2="0" stroke="#334155" strokeWidth="0.5" strokeDasharray="3 3" opacity="0.3" />
+                    {/* Simple Grid (less lines) */}
+                    <line x1="0" y1={height / 2} x2={width} y2={height / 2} stroke="#334155" strokeWidth="0.5" strokeDasharray="3 3" opacity="0.2" />
 
                     {/* Filled Area */}
                     <path
@@ -92,24 +91,11 @@ export const ConsistencyTrend: React.FC<ConsistencyTrendProps> = ({ data }) => {
                         d={lineCommand}
                         fill="none"
                         stroke="#a855f7"
-                        strokeWidth="1.5"
+                        strokeWidth="1.2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         vectorEffect="non-scaling-stroke"
-                        className="drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]"
                     />
-
-                    {/* Hover Interaction (invisible points for tooltip in future, currently just visual dots) */}
-                    {points.map((p, i) => (
-                        <circle
-                            key={i}
-                            cx={p[0]}
-                            cy={p[1]}
-                            r="0"
-                            className="fill-white stroke-purple-500 stroke-2 transition-all duration-300 group-hover:r-[1.5]"
-                            vectorEffect="non-scaling-stroke"
-                        />
-                    ))}
                 </svg>
             </div>
         </div>
