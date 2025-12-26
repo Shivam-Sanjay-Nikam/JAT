@@ -10,6 +10,7 @@ import { Friends } from './pages/Friends'
 import { Help } from './pages/Help'
 import { Todo } from './pages/Todo'
 import { Resources } from './pages/Resources'
+import { DSASheet } from './pages/DSASheet'
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { session, loading } = useAuth()
@@ -54,6 +55,12 @@ function App() {
             <Route path="/resources" element={
               <ProtectedRoute>
                 <Resources />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/dsa-sheet" element={
+              <ProtectedRoute>
+                <DSASheet />
               </ProtectedRoute>
             } />
 

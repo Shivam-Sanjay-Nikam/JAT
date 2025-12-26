@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
-import { LayoutDashboard, Users, LogOut, Briefcase, Menu, X, BookOpen, CheckSquare } from 'lucide-react'
+import { LayoutDashboard, Users, LogOut, Briefcase, Menu, X, BookOpen, CheckSquare, Code2 } from 'lucide-react'
 import { NotificationBell } from './NotificationBell'
 import { useFriendRequests } from '../hooks/useFriendRequests'
 
@@ -43,6 +43,10 @@ export const Navbar: React.FC = () => {
                         <Link to="/resources" className="link-tech flex items-center gap-2 text-xs">
                             <BookOpen className="w-3.5 h-3.5" />
                             <span>Resources</span>
+                        </Link>
+                        <Link to="/dsa-sheet" className="link-tech flex items-center gap-2 text-xs">
+                            <Code2 className="w-3.5 h-3.5" />
+                            <span>DSA_Sheet</span>
                         </Link>
                         <Link to="/friends" className="link-tech flex items-center gap-2 relative text-xs">
                             <Users className="w-3.5 h-3.5" />
@@ -100,6 +104,10 @@ export const Navbar: React.FC = () => {
                         <Link to="/resources" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 text-slate-300 hover:text-primary-400 font-mono text-sm uppercase tracking-wider p-2 rounded hover:bg-slate-800/50">
                             <BookOpen className="w-5 h-5" />
                             Resources
+                        </Link>
+                        <Link to="/dsa-sheet" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 text-slate-300 hover:text-primary-400 font-mono text-sm uppercase tracking-wider p-2 rounded hover:bg-slate-800/50">
+                            <Code2 className="w-5 h-5" />
+                            DSA_Sheet
                         </Link>
                         <Link to="/friends" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 text-slate-300 hover:text-primary-400 font-mono text-sm uppercase tracking-wider p-2 rounded hover:bg-slate-800/50">
                             <Users className="w-5 h-5" />
