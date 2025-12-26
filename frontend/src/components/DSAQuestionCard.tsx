@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Resource } from '../types'
-import { CheckCircle2, Circle, RotateCcw, Pencil, Trash2, Eye } from 'lucide-react'
+import { CheckCircle2, Circle, RotateCcw, Pencil, Trash2, Eye, ExternalLink } from 'lucide-react'
 import { NoteViewer } from './NoteViewer'
 
 interface DSAQuestionCardProps {
@@ -55,7 +55,7 @@ export const DSAQuestionCard: React.FC<DSAQuestionCardProps> = ({
                     )}
                 </button>
 
-                {/* Title and Description */}
+                {/* Title and Link */}
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                         <h3 className={`text-white font-semibold truncate ${isCompleted ? 'line-through text-slate-500' : ''}`}>
@@ -69,9 +69,16 @@ export const DSAQuestionCard: React.FC<DSAQuestionCardProps> = ({
                         )}
                     </div>
                     {question.description && (
-                        <p className="text-slate-500 text-xs mt-0.5 truncate">
-                            {question.description}
-                        </p>
+                        <a
+                            href={question.description}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-blue-400 hover:text-blue-300 text-xs mt-0.5 truncate flex items-center gap-1 group/link"
+                        >
+                            <span className="truncate">{question.description}</span>
+                            <ExternalLink className="w-3 h-3 flex-shrink-0 opacity-0 group-hover/link:opacity-100 transition-opacity" />
+                        </a>
                     )}
                 </div>
 

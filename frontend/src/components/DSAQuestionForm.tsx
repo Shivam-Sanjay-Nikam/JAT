@@ -142,18 +142,21 @@ export const DSAQuestionForm: React.FC<DSAQuestionFormProps> = ({
                         />
                     </div>
 
-                    {/* Description */}
+                    {/* Problem Link */}
                     <div>
                         <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">
-                            Description
+                            Problem Link
                         </label>
-                        <textarea
+                        <input
+                            type="url"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            rows={2}
-                            className="w-full bg-slate-800 border border-slate-700 text-white px-3 py-2 focus:outline-none focus:border-primary-500 transition-colors font-mono text-sm resize-none"
-                            placeholder="Brief description or problem statement..."
+                            className="w-full bg-slate-800 border border-slate-700 text-white px-3 py-2 focus:outline-none focus:border-primary-500 transition-colors font-mono text-sm"
+                            placeholder="https://leetcode.com/problems/two-sum/ or https://..."
                         />
+                        <p className="text-[10px] text-slate-600 font-mono mt-1">
+                            Link to the problem (LeetCode, Codeforces, etc.)
+                        </p>
                     </div>
 
                     {/* Notes/Content */}
