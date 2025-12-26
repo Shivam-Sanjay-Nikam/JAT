@@ -1,6 +1,6 @@
 import React from 'react'
 import { Navbar } from '../components/Navbar'
-import { LayoutDashboard, Users, Bell, Command, Terminal, Shield, CheckSquare, BookOpen, FileText, Link as LinkIcon, StickyNote } from 'lucide-react'
+import { LayoutDashboard, Users, Bell, Command, Terminal, Shield, CheckSquare, BookOpen, FileText, Link as LinkIcon, StickyNote, Code2 } from 'lucide-react'
 
 export const Help: React.FC = () => {
     return (
@@ -175,10 +175,37 @@ export const Help: React.FC = () => {
 
                         <div className="space-y-6 relative z-10">
                             <div>
-                                <h3 className="text-lg font-bold text-white mb-2">Streak Calendar 🔥</h3>
+                                <h3 className="text-lg font-bold text-white mb-2">Activity Calendar 🔥</h3>
                                 <p className="text-slate-400 text-sm">
-                                    The monthly calendar visualizes your productivity streak. Days where you complete <strong className="text-white">100% of tasks</strong> earn a
+                                    The monthly calendar visualizes your productivity with three different view modes. Days where you complete <strong className="text-white">100% of tasks</strong> earn a
                                     <span className="text-primary-400"> 🔥 fire emoji</span>. Navigate months using the arrow buttons to review your history.
+                                </p>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white mb-2">Calendar View Modes</h3>
+                                <p className="text-slate-400 text-sm mb-2">
+                                    Switch between three tracking modes using the segmented control:
+                                </p>
+                                <ul className="text-slate-400 text-sm space-y-2 ml-4">
+                                    <li>
+                                        <strong className="text-white">Plan Adherence:</strong> Tracks how well you stick to your planned schedule. 
+                                        Shows completion percentage for tasks scheduled on each day.
+                                    </li>
+                                    <li>
+                                        <strong className="text-white">Total Output:</strong> Measures your overall productivity. 
+                                        Counts all tasks completed on each day, regardless of when they were scheduled.
+                                    </li>
+                                    <li>
+                                        <strong className="text-white">Discipline (Consistency):</strong> Focuses on on-time completion. 
+                                        Tracks tasks completed on the exact day they were due, measuring your consistency and discipline.
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white mb-2">Consistency Trend Graph</h3>
+                                <p className="text-slate-400 text-sm">
+                                    When viewing <strong className="text-white">Discipline</strong> mode, a trend graph appears showing your consistency percentage over the last 30 days. 
+                                    The graph displays your average consistency rate and helps you identify patterns in your productivity.
                                 </p>
                             </div>
                             <div>
@@ -278,6 +305,103 @@ export const Help: React.FC = () => {
                                     Each resource card displays action buttons: <strong className="text-white">View/Download</strong> (eye/download icon),
                                     <strong className="text-white"> Edit</strong> (pencil icon), and <strong className="text-white">Delete</strong> (trash icon).
                                     Editing pre-fills all existing values for easy updates.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div className="h-px bg-gradient-to-r from-transparent via-slate-800 to-transparent"></div>
+
+                {/* Section: DSA Sheet */}
+                <section className="space-y-6">
+                    <div className="flex items-center gap-4 mb-6">
+                        <div className="bg-primary-500/10 p-3 rounded-lg border border-primary-500/30">
+                            <Code2 className="w-8 h-8 text-primary-400" />
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-bold text-white font-[Orbitron] uppercase tracking-wider">DSA_Sheet</h2>
+                            <p className="text-slate-500 font-mono text-sm">CODING_PRACTICE_TRACKER</p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="glass-panel p-6 rounded-xl border-l-4 border-l-primary-500">
+                            <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                                <Command className="w-4 h-4 text-primary-500" />
+                                Question Tracking
+                            </h3>
+                            <p className="text-slate-400 text-sm leading-relaxed">
+                                Track your DSA practice questions in a clean list format. Add questions using the <strong className="text-white">Add Question</strong> button.
+                                Each question can include a problem link, solution notes, topic tags, and completion status.
+                            </p>
+                        </div>
+                        <div className="glass-panel p-6 rounded-xl border-l-4 border-l-green-500">
+                            <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                                <Terminal className="w-4 h-4 text-green-500" />
+                                Progress Tracking
+                            </h3>
+                            <p className="text-slate-400 text-sm leading-relaxed">
+                                Monitor your progress with real-time statistics: <strong className="text-white">Total</strong>, <strong className="text-green-400">Completed</strong>,
+                                <strong className="text-yellow-400"> Pending</strong>, and <strong className="text-orange-400">Revise</strong> counts.
+                                A progress bar shows your overall completion percentage.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-8 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-3xl"></div>
+
+                        <div className="space-y-6 relative z-10">
+                            <div>
+                                <h3 className="text-lg font-bold text-white mb-2">Question Management</h3>
+                                <p className="text-slate-400 text-sm mb-2">
+                                    Each question entry includes:
+                                </p>
+                                <ul className="text-slate-400 text-sm space-y-2 ml-4">
+                                    <li>
+                                        <strong className="text-white">Title:</strong> The problem name (e.g., "Two Sum", "Reverse Linked List")
+                                    </li>
+                                    <li>
+                                        <strong className="text-white">Problem Link:</strong> Direct URL to the problem on LeetCode, Codeforces, or other platforms
+                                    </li>
+                                    <li>
+                                        <strong className="text-white">Notes/Solution:</strong> Your solution approach, code, time/space complexity, and any important notes
+                                    </li>
+                                    <li>
+                                        <strong className="text-white">Topic Tags:</strong> Categorize by topics like "Array", "String", "DP", "Graph", etc.
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white mb-2">Completion Status</h3>
+                                <p className="text-slate-400 text-sm">
+                                    Mark questions as <strong className="text-green-400">Completed</strong> by clicking the checkbox. 
+                                    Completed questions are visually distinguished and counted in your progress stats.
+                                </p>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white mb-2">Revision System</h3>
+                                <p className="text-slate-400 text-sm">
+                                    Use the <strong className="text-orange-400">Revise</strong> tag to mark questions that need review. 
+                                    Questions with the Revise tag are highlighted in orange and can be filtered using the "Revise" tab. 
+                                    This helps you identify which problems to revisit for better retention.
+                                </p>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white mb-2">Filtering & Organization</h3>
+                                <p className="text-slate-400 text-sm">
+                                    Use the filter tabs to view questions by status: <strong className="text-white">All</strong>, 
+                                    <strong className="text-green-400"> Completed</strong>, <strong className="text-yellow-400"> Pending</strong>, 
+                                    or <strong className="text-orange-400"> Revise</strong>. The compact list view allows you to see many questions at once.
+                                </p>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white mb-2">Quick Actions</h3>
+                                <p className="text-slate-400 text-sm">
+                                    Each question card provides quick access to: <strong className="text-white">View Notes</strong> (eye icon), 
+                                    <strong className="text-white"> Toggle Revise</strong> (refresh icon), <strong className="text-white">Edit</strong> (pencil icon), 
+                                    and <strong className="text-white">Delete</strong> (trash icon). Click the problem link to open it in a new tab.
                                 </p>
                             </div>
                         </div>
