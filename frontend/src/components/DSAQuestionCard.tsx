@@ -36,105 +36,110 @@ export const DSAQuestionCard: React.FC<DSAQuestionCardProps> = ({
 
     return (
         <div
-            className={`border ${getCardStyle()} p-3 transition-all group relative overflow-hidden flex items-center gap-4`}
+            className={`border ${getCardStyle()} p-3 transition-all group relative overflow-hidden flex flex-col md:flex-row items-stretch md:items-center gap-4`}
         >
             {/* Hover gradient effect */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-            <div className="relative z-10 flex items-center gap-4 flex-1 min-w-0">
-                {/* Completion checkbox */}
-                <button
-                    onClick={() => onToggleComplete(question)}
-                    className="flex-shrink-0"
-                    title={isCompleted ? 'Mark as incomplete' : 'Mark as complete'}
-                >
-                    {isCompleted ? (
-                        <CheckCircle2 className="w-5 h-5 text-green-400" />
-                    ) : (
-                        <Circle className="w-5 h-5 text-slate-500 hover:text-slate-400" />
-                    )}
-                </button>
+            <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-4 flex-1 min-w-0">
+                {/* Header Row on Mobile: Checkbox + Title */}
+                <div className="flex items-start gap-3 w-full md:w-auto md:flex-1 min-w-0">
+                    {/* Completion checkbox */}
+                    <button
+                        onClick={() => onToggleComplete(question)}
+                        className="flex-shrink-0 mt-0.5 md:mt-0"
+                        title={isCompleted ? 'Mark as incomplete' : 'Mark as complete'}
+                    >
+                        {isCompleted ? (
+                            <CheckCircle2 className="w-5 h-5 text-green-400" />
+                        ) : (
+                            <Circle className="w-5 h-5 text-slate-500 hover:text-slate-400" />
+                        )}
+                    </button>
 
-                {/* Title and Link */}
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                        <h3 className={`text-white font-semibold truncate ${isCompleted ? 'line-through text-slate-500' : ''}`}>
-                            {question.title}
-                        </h3>
-                        {needsRevise && (
-                            <div className="flex items-center gap-1 bg-orange-500/20 border border-orange-500/50 px-2 py-0.5 rounded flex-shrink-0">
-                                <RotateCcw className="w-3 h-3 text-orange-400" />
-                                <span className="text-[9px] font-mono text-orange-400 uppercase tracking-wider">Revise</span>
-                            </div>
+                    {/* Title and Link */}
+                    <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <h3 className={`text-white font-semibold break-words ${isCompleted ? 'line-through text-slate-500' : ''}`}>
+                                {question.title}
+                            </h3>
+                            {needsRevise && (
+                                <div className="flex items-center gap-1 bg-orange-500/20 border border-orange-500/50 px-2 py-0.5 rounded flex-shrink-0">
+                                    <RotateCcw className="w-3 h-3 text-orange-400" />
+                                    <span className="text-[9px] font-mono text-orange-400 uppercase tracking-wider">Revise</span>
+                                </div>
+                            )}
+                        </div>
+                        {question.description && (
+                            <a
+                                href={question.description}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="text-blue-400 hover:text-blue-300 text-xs mt-1 truncate flex items-center gap-1 group/link max-w-full"
+                            >
+                                <span className="truncate flex-1">{question.description}</span>
+                                <ExternalLink className="w-3 h-3 flex-shrink-0 opacity-100 md:opacity-0 md:group-hover/link:opacity-100 transition-opacity" />
+                            </a>
                         )}
                     </div>
-                    {question.description && (
-                        <a
-                            href={question.description}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="text-blue-400 hover:text-blue-300 text-xs mt-0.5 truncate flex items-center gap-1 group/link"
-                        >
-                            <span className="truncate">{question.description}</span>
-                            <ExternalLink className="w-3 h-3 flex-shrink-0 opacity-0 group-hover/link:opacity-100 transition-opacity" />
-                        </a>
-                    )}
                 </div>
 
-                {/* Tags (excluding DSA, Completed, Revise) */}
-                {otherTags.length > 0 && (
-                    <div className="hidden md:flex flex-wrap gap-1.5 flex-shrink-0">
-                        {otherTags.slice(0, 3).map((tag, idx) => (
-                            <span
-                                key={idx}
-                                className="px-2 py-0.5 bg-slate-800 border border-slate-700 text-[10px] font-mono text-slate-400 uppercase tracking-wider"
-                            >
-                                {tag}
-                            </span>
-                        ))}
-                        {otherTags.length > 3 && (
-                            <span className="px-2 py-0.5 text-[10px] font-mono text-slate-500">
-                                +{otherTags.length - 3}
-                            </span>
-                        )}
-                    </div>
-                )}
+                {/* Footer Row on Mobile: Tags + Actions */}
+                <div className="flex items-center justify-between w-full md:w-auto gap-4 md:gap-4 ml-8 md:ml-0">
+                    {/* Tags (excluding DSA, Completed, Revise) */}
+                    {otherTags.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 flex-1 md:flex-initial">
+                            {otherTags.slice(0, 3).map((tag, idx) => (
+                                <span
+                                    key={idx}
+                                    className="px-2 py-0.5 bg-slate-800 border border-slate-700 text-[10px] font-mono text-slate-400 uppercase tracking-wider whitespace-nowrap"
+                                >
+                                    {tag}
+                                </span>
+                            ))}
+                            {otherTags.length > 3 && (
+                                <span className="px-2 py-0.5 text-[10px] font-mono text-slate-500 whitespace-nowrap">
+                                    +{otherTags.length - 3}
+                                </span>
+                            )}
+                        </div>
+                    )}
 
-                {/* Action buttons */}
-                <div className="flex items-center gap-1 flex-shrink-0">
-                    <button
-                        onClick={() => setViewingNote(true)}
-                        className="p-2 text-slate-500 hover:text-white transition-colors"
-                        title="View notes"
-                    >
-                        <Eye className="w-4 h-4" />
-                    </button>
-                    <button
-                        onClick={() => onToggleRevise(question)}
-                        className={`p-2 transition-colors ${
-                            needsRevise
-                                ? 'text-orange-400 hover:text-orange-300'
-                                : 'text-slate-500 hover:text-orange-400'
-                        }`}
-                        title={needsRevise ? 'Remove revise tag' : 'Mark for revision'}
-                    >
-                        <RotateCcw className="w-4 h-4" />
-                    </button>
-                    <button
-                        onClick={() => onEdit(question)}
-                        className="p-2 text-slate-500 hover:text-primary-400 transition-colors"
-                        title="Edit"
-                    >
-                        <Pencil className="w-4 h-4" />
-                    </button>
-                    <button
-                        onClick={() => onDelete(question.id)}
-                        className="p-2 text-slate-500 hover:text-red-400 transition-colors"
-                        title="Delete"
-                    >
-                        <Trash2 className="w-4 h-4" />
-                    </button>
+                    {/* Action buttons */}
+                    <div className="flex items-center gap-1 flex-shrink-0 ml-auto md:ml-0">
+                        <button
+                            onClick={() => setViewingNote(true)}
+                            className="p-2 text-slate-500 hover:text-white transition-colors"
+                            title="View notes"
+                        >
+                            <Eye className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={() => onToggleRevise(question)}
+                            className={`p-2 transition-colors ${needsRevise
+                                    ? 'text-orange-400 hover:text-orange-300'
+                                    : 'text-slate-500 hover:text-orange-400'
+                                }`}
+                            title={needsRevise ? 'Remove revise tag' : 'Mark for revision'}
+                        >
+                            <RotateCcw className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={() => onEdit(question)}
+                            className="p-2 text-slate-500 hover:text-primary-400 transition-colors"
+                            title="Edit"
+                        >
+                            <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={() => onDelete(question.id)}
+                            className="p-2 text-slate-500 hover:text-red-400 transition-colors"
+                            title="Delete"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
             </div>
 

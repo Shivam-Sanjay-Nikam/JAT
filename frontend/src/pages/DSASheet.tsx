@@ -121,54 +121,56 @@ export const DSASheet: React.FC = () => {
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Page Header */}
                 <div className="border-b border-slate-800 pb-6 mb-8">
-                    <div className="flex items-center gap-3 mb-2">
-                        <Code2 className="w-6 h-6 text-primary-500" />
-                        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 font-[Orbitron] uppercase tracking-[0.2em]">
-                            DSA_Sheet
-                        </h1>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
+                        <div className="flex items-center gap-3">
+                            <Code2 className="w-6 h-6 text-primary-500" />
+                            <h1 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 font-[Orbitron] uppercase tracking-[0.2em]">
+                                DSA_Sheet
+                            </h1>
+                        </div>
                     </div>
                     <p className="text-primary-400 font-mono text-xs tracking-wider">
                         &gt; TRACK YOUR CODING PRACTICE AND REVISION
                     </p>
 
                     {/* Stats */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                        <div className="bg-slate-900/50 border border-slate-800 p-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mt-6">
+                        <div className="bg-slate-900/50 border border-slate-800 p-3 sm:p-4">
                             <div className="flex items-center gap-2 mb-2">
-                                <Code2 className="w-4 h-4 text-primary-500" />
-                                <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">Total</span>
+                                <Code2 className="w-3 h-3 sm:w-4 sm:h-4 text-primary-500" />
+                                <span className="text-[9px] sm:text-[10px] font-mono text-slate-500 uppercase tracking-wider">Total</span>
                             </div>
-                            <div className="text-2xl font-bold text-white font-[Orbitron]">
+                            <div className="text-xl sm:text-2xl font-bold text-white font-[Orbitron]">
                                 {stats.total}
                             </div>
                         </div>
 
-                        <div className="bg-slate-900/50 border border-green-500/20 p-4">
+                        <div className="bg-slate-900/50 border border-green-500/20 p-3 sm:p-4">
                             <div className="flex items-center gap-2 mb-2">
-                                <CheckCircle2 className="w-4 h-4 text-green-400" />
-                                <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">Completed</span>
+                                <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-400" />
+                                <span className="text-[9px] sm:text-[10px] font-mono text-slate-500 uppercase tracking-wider">Completed</span>
                             </div>
-                            <div className="text-2xl font-bold text-white font-[Orbitron]">
+                            <div className="text-xl sm:text-2xl font-bold text-white font-[Orbitron]">
                                 {stats.completed}
                             </div>
                         </div>
 
-                        <div className="bg-slate-900/50 border border-yellow-500/20 p-4">
+                        <div className="bg-slate-900/50 border border-yellow-500/20 p-3 sm:p-4">
                             <div className="flex items-center gap-2 mb-2">
-                                <RotateCcw className="w-4 h-4 text-yellow-400" />
-                                <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">Pending</span>
+                                <RotateCcw className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400" />
+                                <span className="text-[9px] sm:text-[10px] font-mono text-slate-500 uppercase tracking-wider">Pending</span>
                             </div>
-                            <div className="text-2xl font-bold text-white font-[Orbitron]">
+                            <div className="text-xl sm:text-2xl font-bold text-white font-[Orbitron]">
                                 {stats.pending}
                             </div>
                         </div>
 
-                        <div className="bg-slate-900/50 border border-orange-500/20 p-4">
+                        <div className="bg-slate-900/50 border border-orange-500/20 p-3 sm:p-4">
                             <div className="flex items-center gap-2 mb-2">
-                                <RotateCcw className="w-4 h-4 text-orange-400" />
-                                <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">Revise</span>
+                                <RotateCcw className="w-3 h-3 sm:w-4 sm:h-4 text-orange-400" />
+                                <span className="text-[9px] sm:text-[10px] font-mono text-slate-500 uppercase tracking-wider">Revise</span>
                             </div>
-                            <div className="text-2xl font-bold text-white font-[Orbitron]">
+                            <div className="text-xl sm:text-2xl font-bold text-white font-[Orbitron]">
                                 {stats.needsRevise}
                             </div>
                         </div>
@@ -189,58 +191,61 @@ export const DSASheet: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Filter Tabs */}
-                <div className="border-b border-slate-800 mb-6">
-                    <div className="flex items-center gap-4 overflow-x-auto">
+                {/* Filter Tabs and Add Button Row */}
+                <div className="mb-6 flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4">
+                    {/* Filter Tabs */}
+                    <div className="border-b border-slate-800 sm:border-b-0 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+                        <div className="flex items-center gap-2 sm:gap-4 min-w-max">
+                            <button
+                                onClick={() => setFilterStatus('ALL')}
+                                className={`px-3 sm:px-4 py-2 border-b-2 transition-colors font-mono text-xs uppercase tracking-wider whitespace-nowrap ${filterStatus === 'ALL'
+                                    ? 'border-primary-500 text-primary-400'
+                                    : 'border-transparent text-slate-500 hover:text-slate-400'
+                                    }`}
+                            >
+                                All ({stats.total})
+                            </button>
+                            <button
+                                onClick={() => setFilterStatus('COMPLETED')}
+                                className={`px-3 sm:px-4 py-2 border-b-2 transition-colors font-mono text-xs uppercase tracking-wider whitespace-nowrap ${filterStatus === 'COMPLETED'
+                                    ? 'border-green-500 text-green-400'
+                                    : 'border-transparent text-slate-500 hover:text-slate-400'
+                                    }`}
+                            >
+                                Completed ({stats.completed})
+                            </button>
+                            <button
+                                onClick={() => setFilterStatus('PENDING')}
+                                className={`px-3 sm:px-4 py-2 border-b-2 transition-colors font-mono text-xs uppercase tracking-wider whitespace-nowrap ${filterStatus === 'PENDING'
+                                    ? 'border-yellow-500 text-yellow-400'
+                                    : 'border-transparent text-slate-500 hover:text-slate-400'
+                                    }`}
+                            >
+                                Pending ({stats.pending})
+                            </button>
+                            <button
+                                onClick={() => setFilterStatus('REVISE')}
+                                className={`px-3 sm:px-4 py-2 border-b-2 transition-colors font-mono text-xs uppercase tracking-wider whitespace-nowrap ${filterStatus === 'REVISE'
+                                    ? 'border-orange-500 text-orange-400'
+                                    : 'border-transparent text-slate-500 hover:text-slate-400'
+                                    }`}
+                            >
+                                <Filter className="w-3 h-3 inline mr-1" />
+                                Revise ({stats.needsRevise})
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Add Button */}
+                    <div className="flex justify-end">
                         <button
-                            onClick={() => setFilterStatus('ALL')}
-                            className={`px-4 py-2 border-b-2 transition-colors font-mono text-xs uppercase tracking-wider whitespace-nowrap ${filterStatus === 'ALL'
-                                ? 'border-primary-500 text-primary-400'
-                                : 'border-transparent text-slate-500 hover:text-slate-400'
-                                }`}
+                            onClick={handleAddClick}
+                            className="px-4 py-2 bg-primary-500 text-slate-900 hover:bg-primary-400 transition-colors flex items-center gap-2 font-mono text-xs uppercase tracking-wider font-bold rounded sm:rounded-none w-full sm:w-auto justify-center"
                         >
-                            All ({stats.total})
-                        </button>
-                        <button
-                            onClick={() => setFilterStatus('COMPLETED')}
-                            className={`px-4 py-2 border-b-2 transition-colors font-mono text-xs uppercase tracking-wider whitespace-nowrap ${filterStatus === 'COMPLETED'
-                                ? 'border-green-500 text-green-400'
-                                : 'border-transparent text-slate-500 hover:text-slate-400'
-                                }`}
-                        >
-                            Completed ({stats.completed})
-                        </button>
-                        <button
-                            onClick={() => setFilterStatus('PENDING')}
-                            className={`px-4 py-2 border-b-2 transition-colors font-mono text-xs uppercase tracking-wider whitespace-nowrap ${filterStatus === 'PENDING'
-                                ? 'border-yellow-500 text-yellow-400'
-                                : 'border-transparent text-slate-500 hover:text-slate-400'
-                                }`}
-                        >
-                            Pending ({stats.pending})
-                        </button>
-                        <button
-                            onClick={() => setFilterStatus('REVISE')}
-                            className={`px-4 py-2 border-b-2 transition-colors font-mono text-xs uppercase tracking-wider whitespace-nowrap ${filterStatus === 'REVISE'
-                                ? 'border-orange-500 text-orange-400'
-                                : 'border-transparent text-slate-500 hover:text-slate-400'
-                                }`}
-                        >
-                            <Filter className="w-3 h-3 inline mr-1" />
-                            Revise ({stats.needsRevise})
+                            <Plus className="w-4 h-4" />
+                            Add Question
                         </button>
                     </div>
-                </div>
-
-                {/* Add Button */}
-                <div className="mb-6 flex justify-end">
-                    <button
-                        onClick={handleAddClick}
-                        className="px-4 py-2 bg-primary-500 text-slate-900 hover:bg-primary-400 transition-colors flex items-center gap-2 font-mono text-xs uppercase tracking-wider font-bold"
-                    >
-                        <Plus className="w-4 h-4" />
-                        Add Question
-                    </button>
                 </div>
 
                 {/* Questions List */}
