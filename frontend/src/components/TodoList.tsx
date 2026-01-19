@@ -35,6 +35,11 @@ export const TodoList: React.FC<TodoListProps> = ({ date, onDateChange }) => {
     const [newTodoTitle, setNewTodoTitle] = useState('')
     const [isAdding, setIsAdding] = useState(false)
 
+    // Multi-day State
+    const [isMultiDay, setIsMultiDay] = useState(false)
+    const [rangeStart, setRangeStart] = useState(new Date())
+    const [rangeEnd, setRangeEnd] = useState(new Date(new Date().setDate(new Date().getDate() + 2))) // Default +2 days
+
     // Gamification State
     const [showRatingModal, setShowRatingModal] = useState(false)
     const [selectedTaskForRating, setSelectedTaskForRating] = useState<{ id: string, title: string, exp: number } | null>(null)
@@ -54,7 +59,14 @@ export const TodoList: React.FC<TodoListProps> = ({ date, onDateChange }) => {
         if (!newTodoTitle.trim()) return
 
         setIsAdding(true)
-        await addTodo(newTodoTitle.trim())
+
+        if (isMultiDay) {
+            await addTodo(newTodoTitle.trim(), rangeStart, rangeEnd)
+            setIsMultiDay(false) // Reset after add
+        } else {
+            await addTodo(newTodoTitle.trim())
+        }
+
         setNewTodoTitle('')
         setIsAdding(false)
     }
@@ -188,25 +200,60 @@ export const TodoList: React.FC<TodoListProps> = ({ date, onDateChange }) => {
             </div>
 
             {/* Add Todo Form */}
-            <form onSubmit={handleAddTodo} className="flex gap-2">
-                <div className="flex-1 relative">
-                    <input
-                        type="text"
-                        value={newTodoTitle}
-                        onChange={(e) => setNewTodoTitle(e.target.value)}
-                        placeholder="ADD_NEW_TASK..."
-                        className="w-full bg-slate-950 border border-slate-800 text-slate-200 text-sm font-mono py-2.5 px-3 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 placeholder:text-slate-600"
-                        disabled={isAdding}
-                    />
+            <form onSubmit={handleAddTodo} className="space-y-3">
+                <div className="flex gap-2">
+                    <div className="flex-1 relative">
+                        <input
+                            type="text"
+                            value={newTodoTitle}
+                            onChange={(e) => setNewTodoTitle(e.target.value)}
+                            placeholder="ADD_NEW_TASK..."
+                            className="w-full bg-slate-950 border border-slate-800 text-slate-200 text-sm font-mono py-2.5 px-3 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 placeholder:text-slate-600"
+                            disabled={isAdding}
+                        />
+                    </div>
+                    <button
+                        type="submit"
+                        disabled={isAdding || !newTodoTitle.trim()}
+                        className="btn-primary flex items-center gap-1.5 text-xs py-2.5 px-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <Plus className="w-4 h-4" />
+                        <span>ADD</span>
+                    </button>
                 </div>
-                <button
-                    type="submit"
-                    disabled={isAdding || !newTodoTitle.trim()}
-                    className="btn-primary flex items-center gap-1.5 text-xs py-2.5 px-4 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <Plus className="w-4 h-4" />
-                    <span>ADD</span>
-                </button>
+
+                {/* Multi-day Options */}
+                <div className="flex items-center gap-2">
+                    <button
+                        type="button"
+                        onClick={() => setIsMultiDay(!isMultiDay)}
+                        className={`text-xs flex items-center gap-1.5 px-2 py-1 rounded border transition-colors ${isMultiDay
+                            ? 'bg-primary-500/10 border-primary-500 text-primary-400'
+                            : 'bg-slate-900 border-slate-800 text-slate-500 hover:border-slate-700'
+                            }`}
+                    >
+                        <Calendar className="w-3 h-3" />
+                        <span>Repeat / Date Range</span>
+                    </button>
+
+                    {isMultiDay && (
+                        <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2 duration-200">
+                            <input
+                                type="date"
+                                value={rangeStart.toISOString().split('T')[0]}
+                                onChange={(e) => setRangeStart(new Date(e.target.value))}
+                                className="bg-slate-950 border border-slate-800 text-slate-300 text-xs py-1 px-2 rounded focus:border-primary-500"
+                            />
+                            <span className="text-slate-600 text-xs">to</span>
+                            <input
+                                type="date"
+                                value={rangeEnd.toISOString().split('T')[0]}
+                                onChange={(e) => setRangeEnd(new Date(e.target.value))}
+                                className="bg-slate-950 border border-slate-800 text-slate-300 text-xs py-1 px-2 rounded focus:border-primary-500"
+                            />
+                        </div>
+                    )}
+                </div>
             </form>
 
             {/* Todo List */}

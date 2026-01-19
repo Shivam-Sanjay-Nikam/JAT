@@ -81,30 +81,72 @@ export const useTodos = (
         }
     }
 
-    const addTodo = async (title: string) => {
+    const addTodo = async (title: string, startDate?: Date, endDate?: Date) => {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return
 
-        const dateStr = getDateString(selectedDate)
+        if (startDate && endDate) {
+            // Batch create for date range
+            const todosToInsert = []
+            let currentDate = new Date(startDate)
+            const end = new Date(endDate)
 
-        const { data, error } = await supabase
-            .from('todos')
-            .insert({
-                user_id: user.id,
-                title,
-                date: dateStr,
-                is_completed: false
-            })
-            .select()
-            .single()
+            // Loop until currentDate is after endDate
+            while (currentDate <= end) {
+                todosToInsert.push({
+                    user_id: user.id,
+                    title,
+                    date: getDateString(currentDate),
+                    is_completed: false
+                })
+                // Add 1 day
+                currentDate.setDate(currentDate.getDate() + 1)
+                // Reset to new Date to avoid reference issues if pushing same object (though pushing primitive strings is fine, safer to clone date obj logic)
+                currentDate = new Date(currentDate)
+            }
 
-        if (error) {
-            console.error('Error adding todo:', error)
-        } else if (data) {
-            setTodos(prev => [...prev, data])
-            // Check completion status after adding
-            await checkDailyCompletion(dateStr)
-            await fetchAllTimeStats()
+            const { data, error } = await supabase
+                .from('todos')
+                .insert(todosToInsert)
+                .select()
+
+            if (error) {
+                console.error('Error adding multi-day todos:', error)
+            } else if (data) {
+                // If any of the new todos are for the currently selected date, add them to state
+                const currentViewDateStr = getDateString(selectedDate)
+                const relevantTodos = data.filter(t => t.date === currentViewDateStr)
+
+                if (relevantTodos.length > 0) {
+                    setTodos(prev => [...prev, ...relevantTodos])
+                }
+
+                await checkDailyCompletion(currentViewDateStr)
+                await fetchAllTimeStats()
+            }
+        } else {
+            // Single day add (original logic)
+            const dateStr = getDateString(selectedDate)
+
+            const { data, error } = await supabase
+                .from('todos')
+                .insert({
+                    user_id: user.id,
+                    title,
+                    date: dateStr,
+                    is_completed: false
+                })
+                .select()
+                .single()
+
+            if (error) {
+                console.error('Error adding todo:', error)
+            } else if (data) {
+                setTodos(prev => [...prev, data])
+                // Check completion status after adding
+                await checkDailyCompletion(dateStr)
+                await fetchAllTimeStats()
+            }
         }
     }
 
