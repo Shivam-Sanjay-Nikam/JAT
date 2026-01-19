@@ -30,7 +30,7 @@ export const TodoList: React.FC<TodoListProps> = ({ date, onDateChange }) => {
         refresh
     } = useTodos(date, onDateChange)
 
-    const { completeTaskWithRating, level } = useGamification()
+    const { completeTaskWithRating, level, loading: gamificationLoading } = useGamification()
 
     const [newTodoTitle, setNewTodoTitle] = useState('')
     const [isAdding, setIsAdding] = useState(false)
@@ -48,11 +48,21 @@ export const TodoList: React.FC<TodoListProps> = ({ date, onDateChange }) => {
 
     // Check for level up
     useEffect(() => {
+        // If loading, do nothing (wait for initial sync)
+        if (gamificationLoading) return
+
+        // If previousLevelRef is null/undefined (first load), just sync it
+        if (!previousLevelRef.current) {
+            previousLevelRef.current = level
+            return
+        }
+
+        // Real level up check
         if (level > previousLevelRef.current) {
             setShowLevelUpModal(true)
         }
         previousLevelRef.current = level
-    }, [level])
+    }, [level, gamificationLoading])
 
     const handleAddTodo = async (e: React.FormEvent) => {
         e.preventDefault()
