@@ -1,8 +1,11 @@
 
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useTodos } from '../hooks/useTodos'
 import { TodoItem } from './TodoItem'
 import { Plus, ListTodo, ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
+import { useGamification } from '../context/GamificationContext'
+import { TaskCompletionModal } from './TaskCompletionModal'
+import { LevelUpModal } from './LevelUpModal'
 
 interface TodoListProps {
     date?: Date
@@ -23,10 +26,28 @@ export const TodoList: React.FC<TodoListProps> = ({ date, onDateChange }) => {
         isToday,
         goToPreviousDay,
         goToNextDay,
-        goToToday
+        goToToday,
+        refresh
     } = useTodos(date, onDateChange)
+
+    const { completeTaskWithRating, level } = useGamification()
+
     const [newTodoTitle, setNewTodoTitle] = useState('')
     const [isAdding, setIsAdding] = useState(false)
+
+    // Gamification State
+    const [showRatingModal, setShowRatingModal] = useState(false)
+    const [selectedTaskForRating, setSelectedTaskForRating] = useState<{ id: string, title: string, exp: number } | null>(null)
+    const [showLevelUpModal, setShowLevelUpModal] = useState(false)
+    const previousLevelRef = useRef(level)
+
+    // Check for level up
+    useEffect(() => {
+        if (level > previousLevelRef.current) {
+            setShowLevelUpModal(true)
+        }
+        previousLevelRef.current = level
+    }, [level])
 
     const handleAddTodo = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -36,6 +57,37 @@ export const TodoList: React.FC<TodoListProps> = ({ date, onDateChange }) => {
         await addTodo(newTodoTitle.trim())
         setNewTodoTitle('')
         setIsAdding(false)
+    }
+
+    const handleToggleAttempt = async (id: string) => {
+        const todo = todos.find(t => t.id === id)
+        if (!todo) return
+
+        if (todo.is_completed) {
+            // If already completed, normal toggle (uncomplete)
+            await toggleTodo(id)
+        } else {
+            // If not completed, open rating modal
+            setSelectedTaskForRating({
+                id: todo.id,
+                title: todo.title,
+                exp: todo.exp_value || 10
+            })
+            setShowRatingModal(true)
+        }
+    }
+
+    const handleRatingSubmit = async (rating: number) => {
+        if (!selectedTaskForRating) return
+
+        try {
+            await completeTaskWithRating(selectedTaskForRating.id, rating)
+            await refresh() // Refresh todos to show completed status
+            setShowRatingModal(false)
+            setSelectedTaskForRating(null)
+        } catch (error) {
+            console.error("Failed to complete task with rating", error)
+        }
     }
 
     // Format the selected date
@@ -48,6 +100,23 @@ export const TodoList: React.FC<TodoListProps> = ({ date, onDateChange }) => {
 
     return (
         <div className="space-y-4">
+            {/* Gamification Modals */}
+            {selectedTaskForRating && (
+                <TaskCompletionModal
+                    isOpen={showRatingModal}
+                    taskTitle={selectedTaskForRating.title}
+                    baseExp={selectedTaskForRating.exp}
+                    onClose={() => setShowRatingModal(false)}
+                    onSubmit={handleRatingSubmit}
+                />
+            )}
+
+            <LevelUpModal
+                isOpen={showLevelUpModal}
+                newLevel={level}
+                onClose={() => setShowLevelUpModal(false)}
+            />
+
             {/* Date Navigation Header */}
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                 <div className="flex items-center gap-2">
@@ -163,7 +232,7 @@ export const TodoList: React.FC<TodoListProps> = ({ date, onDateChange }) => {
                         <TodoItem
                             key={todo.id}
                             todo={todo}
-                            onToggle={toggleTodo}
+                            onToggle={handleToggleAttempt}
                             onDelete={deleteTodo}
                         />
                     ))

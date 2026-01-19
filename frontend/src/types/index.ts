@@ -48,9 +48,22 @@ export interface Todo {
     id: string
     user_id: string
     title: string
+    description?: string // Added for gamification
+    exp_value: number // Added for gamification (default 10)
+    rating?: number // Added for gamification (1-5)
     is_completed: boolean
     date: string // ISO date string (YYYY-MM-DD)
     completed_at?: string | null // ISO timestamp
+    created_at: string
+    updated_at: string
+}
+
+export interface GamificationStats {
+    id: string
+    user_id: string
+    level: number
+    current_exp: number
+    total_exp: number
     created_at: string
     updated_at: string
 }

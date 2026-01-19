@@ -5,12 +5,15 @@ import { TodoList } from '../components/TodoList'
 import { StreakCalendar } from '../components/StreakCalendar'
 import { useTodos } from '../hooks/useTodos'
 import { useStreak } from '../hooks/useStreak'
+import { useGamification } from '../context/GamificationContext'
+import { LevelProgressBar } from '../components/LevelProgressBar'
 import { Calendar, CheckSquare } from 'lucide-react'
 
 export const Todo: React.FC = () => {
     const [selectedDate, setSelectedDate] = React.useState(new Date())
     const { completionPercentage, completedCount, totalCount, allTimeStats } = useTodos(selectedDate, setSelectedDate)
     const { currentStreak } = useStreak()
+    const { level, currentExp, nextLevelExp } = useGamification()
 
     // Get today's date formatted
     const today = new Date().toLocaleDateString('en-US', {
@@ -46,6 +49,12 @@ export const Todo: React.FC = () => {
                         </div>
                     </div>
                 </div>
+
+                <LevelProgressBar
+                    level={level}
+                    currentExp={currentExp}
+                    nextLevelExp={nextLevelExp}
+                />
 
                 {/* Main Content Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

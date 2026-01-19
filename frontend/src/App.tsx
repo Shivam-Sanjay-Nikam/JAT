@@ -3,6 +3,7 @@ import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthProvider'
 import { NotificationProvider } from './context/NotificationProvider'
+import { GamificationProvider } from './context/GamificationContext'
 import { Login } from './pages/Login'
 import { Register } from './pages/Register'
 import { Dashboard } from './pages/Dashboard'
@@ -30,49 +31,51 @@ function App() {
     <Router>
       <AuthProvider>
         <NotificationProvider>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+          <GamificationProvider>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
 
-            <Route path="/" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
+              <Route path="/" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
 
-            <Route path="/todo" element={
-              <ProtectedRoute>
-                <Todo />
-              </ProtectedRoute>
-            } />
+              <Route path="/todo" element={
+                <ProtectedRoute>
+                  <Todo />
+                </ProtectedRoute>
+              } />
 
-            <Route path="/friends" element={
-              <ProtectedRoute>
-                <Friends />
-              </ProtectedRoute>
-            } />
+              <Route path="/friends" element={
+                <ProtectedRoute>
+                  <Friends />
+                </ProtectedRoute>
+              } />
 
-            <Route path="/resources" element={
-              <ProtectedRoute>
-                <Resources />
-              </ProtectedRoute>
-            } />
+              <Route path="/resources" element={
+                <ProtectedRoute>
+                  <Resources />
+                </ProtectedRoute>
+              } />
 
-            <Route path="/dsa-sheet" element={
-              <ProtectedRoute>
-                <DSASheet />
-              </ProtectedRoute>
-            } />
+              <Route path="/dsa-sheet" element={
+                <ProtectedRoute>
+                  <DSASheet />
+                </ProtectedRoute>
+              } />
 
-            <Route path="/help" element={
-              <ProtectedRoute>
-                <Help />
-              </ProtectedRoute>
-            } />
+              <Route path="/help" element={
+                <ProtectedRoute>
+                  <Help />
+                </ProtectedRoute>
+              } />
 
-            {/* Catch all redirect */}
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
+              {/* Catch all redirect */}
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </GamificationProvider>
         </NotificationProvider>
       </AuthProvider>
     </Router>
