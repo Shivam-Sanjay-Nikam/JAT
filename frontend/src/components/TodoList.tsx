@@ -37,8 +37,7 @@ export const TodoList: React.FC<TodoListProps> = ({ date, onDateChange }) => {
 
     // Multi-day State
     const [isMultiDay, setIsMultiDay] = useState(false)
-    const [rangeStart, setRangeStart] = useState(new Date())
-    const [rangeEnd, setRangeEnd] = useState(new Date(new Date().setDate(new Date().getDate() + 2))) // Default +2 days
+    const [dayCount, setDayCount] = useState(3) // Default 3 days
 
     // Gamification State
     const [showRatingModal, setShowRatingModal] = useState(false)
@@ -70,8 +69,12 @@ export const TodoList: React.FC<TodoListProps> = ({ date, onDateChange }) => {
 
         setIsAdding(true)
 
-        if (isMultiDay) {
-            await addTodo(newTodoTitle.trim(), rangeStart, rangeEnd)
+        if (isMultiDay && dayCount > 1) {
+            const startDate = new Date() // Start today as requested
+            const endDate = new Date()
+            endDate.setDate(startDate.getDate() + (dayCount - 1)) // If 3 days: Today + 2 more days
+
+            await addTodo(newTodoTitle.trim(), startDate, endDate)
             setIsMultiDay(false) // Reset after add
         } else {
             await addTodo(newTodoTitle.trim())
@@ -243,24 +246,20 @@ export const TodoList: React.FC<TodoListProps> = ({ date, onDateChange }) => {
                             }`}
                     >
                         <Calendar className="w-3 h-3" />
-                        <span>Repeat / Date Range</span>
+                        <span>Repeat for Days</span>
                     </button>
 
                     {isMultiDay && (
                         <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2 duration-200">
                             <input
-                                type="date"
-                                value={rangeStart.toISOString().split('T')[0]}
-                                onChange={(e) => setRangeStart(new Date(e.target.value))}
-                                className="bg-slate-950 border border-slate-800 text-slate-300 text-xs py-1 px-2 rounded focus:border-primary-500"
+                                type="number"
+                                min="2"
+                                max="365"
+                                value={dayCount}
+                                onChange={(e) => setDayCount(parseInt(e.target.value) || 2)}
+                                className="bg-slate-950 border border-slate-800 text-slate-300 text-xs py-1 px-2 rounded focus:border-primary-500 w-16"
                             />
-                            <span className="text-slate-600 text-xs">to</span>
-                            <input
-                                type="date"
-                                value={rangeEnd.toISOString().split('T')[0]}
-                                onChange={(e) => setRangeEnd(new Date(e.target.value))}
-                                className="bg-slate-950 border border-slate-800 text-slate-300 text-xs py-1 px-2 rounded focus:border-primary-500"
-                            />
+                            <span className="text-slate-600 text-xs">days starting today</span>
                         </div>
                     )}
                 </div>
