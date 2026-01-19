@@ -44,21 +44,21 @@ export const TodoList: React.FC<TodoListProps> = ({ date, onDateChange }) => {
     const [showRatingModal, setShowRatingModal] = useState(false)
     const [selectedTaskForRating, setSelectedTaskForRating] = useState<{ id: string, title: string, exp: number } | null>(null)
     const [showLevelUpModal, setShowLevelUpModal] = useState(false)
-    const previousLevelRef = useRef(level)
+    const previousLevelRef = useRef<number | null>(null)
 
     // Check for level up
     useEffect(() => {
         // If loading, do nothing (wait for initial sync)
         if (gamificationLoading) return
 
-        // If previousLevelRef is null/undefined (first load), just sync it
-        if (!previousLevelRef.current) {
+        // If previousLevelRef is null (first load), just sync it
+        if (previousLevelRef.current === null) {
             previousLevelRef.current = level
             return
         }
 
         // Real level up check
-        if (level > previousLevelRef.current) {
+        if (previousLevelRef.current !== null && level > previousLevelRef.current) {
             setShowLevelUpModal(true)
         }
         previousLevelRef.current = level
