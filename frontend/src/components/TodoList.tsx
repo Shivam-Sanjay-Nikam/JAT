@@ -27,7 +27,8 @@ export const TodoList: React.FC<TodoListProps> = ({ date, onDateChange }) => {
         goToPreviousDay,
         goToNextDay,
         goToToday,
-        refresh
+        refresh,
+        checkDailyCompletion
     } = useTodos(date, onDateChange)
 
     const { completeTaskWithRating, level, loading: gamificationLoading } = useGamification()
@@ -107,6 +108,10 @@ export const TodoList: React.FC<TodoListProps> = ({ date, onDateChange }) => {
 
         try {
             await completeTaskWithRating(selectedTaskForRating.id, rating)
+            const todoCallback = todos.find(t => t.id === selectedTaskForRating.id)
+            if (todoCallback) {
+                await checkDailyCompletion(todoCallback.date)
+            }
             await refresh() // Refresh todos to show completed status
             setShowRatingModal(false)
             setSelectedTaskForRating(null)

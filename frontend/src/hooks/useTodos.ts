@@ -324,6 +324,7 @@ export const useTodos = (
         goToPreviousDay,
         goToNextDay,
         goToToday,
-        allTimeStats
+        allTimeStats,
+        checkDailyCompletion
     }
 }
